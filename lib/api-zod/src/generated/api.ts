@@ -8,9 +8,185 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
+});
+
+/**
+ * @summary List published blog posts
+ */
+export const ListBlogPostsQueryParams = zod.object({
+  all: zod.coerce
+    .string()
+    .optional()
+    .describe('If \"true\", return all posts including drafts (admin only)'),
+});
+
+export const ListBlogPostsResponseItem = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  excerpt: zod.string(),
+  content: zod.string(),
+  category: zod.string(),
+  tag: zod.string(),
+  imageUrl: zod.string().nullable(),
+  readTime: zod.string(),
+  published: zod.boolean(),
+  publishedAt: zod.string().nullable(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListBlogPostsResponse = zod.array(ListBlogPostsResponseItem);
+
+/**
+ * @summary Create a new blog post (admin)
+ */
+export const CreateBlogPostBody = zod.object({
+  title: zod.string(),
+  excerpt: zod.string(),
+  content: zod.string(),
+  category: zod.string(),
+  tag: zod.string(),
+  imageUrl: zod.string().nullish(),
+  readTime: zod.string(),
+  published: zod.boolean(),
+});
+
+/**
+ * @summary Get a single blog post
+ */
+export const GetBlogPostParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetBlogPostResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  excerpt: zod.string(),
+  content: zod.string(),
+  category: zod.string(),
+  tag: zod.string(),
+  imageUrl: zod.string().nullable(),
+  readTime: zod.string(),
+  published: zod.boolean(),
+  publishedAt: zod.string().nullable(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Update a blog post (admin)
+ */
+export const UpdateBlogPostParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateBlogPostBody = zod.object({
+  title: zod.string(),
+  excerpt: zod.string(),
+  content: zod.string(),
+  category: zod.string(),
+  tag: zod.string(),
+  imageUrl: zod.string().nullish(),
+  readTime: zod.string(),
+  published: zod.boolean(),
+});
+
+export const UpdateBlogPostResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  excerpt: zod.string(),
+  content: zod.string(),
+  category: zod.string(),
+  tag: zod.string(),
+  imageUrl: zod.string().nullable(),
+  readTime: zod.string(),
+  published: zod.boolean(),
+  publishedAt: zod.string().nullable(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete a blog post (admin)
+ */
+export const DeleteBlogPostParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+/**
+ * @summary Subscribe to newsletter
+ */
+export const SubscribeNewsletterBody = zod.object({
+  email: zod.string(),
+  name: zod.string().nullish(),
+});
+
+/**
+ * @summary List newsletter subscribers (admin)
+ */
+export const ListNewsletterSubscribersResponseItem = zod.object({
+  id: zod.number(),
+  email: zod.string(),
+  name: zod.string().nullable(),
+  createdAt: zod.string(),
+});
+export const ListNewsletterSubscribersResponse = zod.array(
+  ListNewsletterSubscribersResponseItem,
+);
+
+/**
+ * @summary List all site content entries
+ */
+export const ListSiteContentResponseItem = zod.object({
+  id: zod.number(),
+  key: zod.string(),
+  value: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListSiteContentResponse = zod.array(ListSiteContentResponseItem);
+
+/**
+ * @summary Update a site content entry (admin)
+ */
+export const UpdateSiteContentParams = zod.object({
+  key: zod.coerce.string(),
+});
+
+export const UpdateSiteContentBody = zod.object({
+  value: zod.string(),
+});
+
+export const UpdateSiteContentResponse = zod.object({
+  id: zod.number(),
+  key: zod.string(),
+  value: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Admin login
+ */
+export const AdminLoginBody = zod.object({
+  password: zod.string(),
+});
+
+export const AdminLoginResponse = zod.object({
+  authenticated: zod.boolean(),
+});
+
+/**
+ * @summary Admin logout
+ */
+export const AdminLogoutResponse = zod.object({
+  authenticated: zod.boolean(),
+});
+
+/**
+ * @summary Check admin authentication status
+ */
+export const AdminMeResponse = zod.object({
+  authenticated: zod.boolean(),
 });

@@ -8,3 +8,72 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface BlogPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  tag: string;
+  /** @nullable */
+  imageUrl: string | null;
+  readTime: string;
+  published: boolean;
+  /** @nullable */
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BlogPostBody {
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  tag: string;
+  /** @nullable */
+  imageUrl?: string | null;
+  readTime: string;
+  published: boolean;
+}
+
+export interface NewsletterSubscriber {
+  id: number;
+  email: string;
+  /** @nullable */
+  name: string | null;
+  createdAt: string;
+}
+
+export interface NewsletterSignupBody {
+  email: string;
+  /** @nullable */
+  name?: string | null;
+}
+
+export interface SiteContent {
+  id: number;
+  key: string;
+  value: string;
+  updatedAt: string;
+}
+
+export interface SiteContentBody {
+  value: string;
+}
+
+export interface AdminLoginBody {
+  password: string;
+}
+
+export interface AdminSession {
+  authenticated: boolean;
+}
+
+export type ListBlogPostsParams = {
+  /**
+   * If "true", return all posts including drafts (admin only)
+   */
+  all?: string;
+};
