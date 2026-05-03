@@ -68,6 +68,16 @@ Personal brand website for Nigerian education leader Melvina Igboanugo, built as
 - `newsletter_subscribers` — id, email, name, createdAt
 - `site_content` — id, key (unique), value, updatedAt
 
+## Email Delivery (Pending)
+
+Email delivery (newsletter welcome email + contact form notification) has not been set up yet.
+
+**To enable it:** Provide a `RESEND_API_KEY` or `SENDGRID_API_KEY` secret, or connect the Resend/SendGrid Replit integration.
+
+Planned emails:
+- Welcome email when a user subscribes to the newsletter
+- Contact form notification to Melvina when someone sends a message
+
 ## Running Codegen
 
 After changing `lib/api-spec/openapi.yaml`:
