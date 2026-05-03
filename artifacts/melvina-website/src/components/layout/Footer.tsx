@@ -121,6 +121,11 @@ export function Footer() {
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-background/40">
           <p>&copy; {new Date().getFullYear()} Melvina Igboanugo. All rights reserved.</p>
           <p className="italic font-serif">"Raising Readers. Building Thinkers. Transforming Education."</p>
+          <Link href="/admin">
+            <span className="text-background/25 hover:text-background/50 transition-colors cursor-pointer text-xs">
+              Admin
+            </span>
+          </Link>
         </div>
       </div>
     </footer>
