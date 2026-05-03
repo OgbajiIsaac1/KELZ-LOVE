@@ -9,6 +9,7 @@ import About from "@/pages/about";
 import Programs from "@/pages/programs";
 import Impact from "@/pages/impact";
 import Contact from "@/pages/contact";
+import Blog from "@/pages/blog";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/programs" component={Programs} />
       <Route path="/impact" component={Impact} />
       <Route path="/contact" component={Contact} />
+      <Route path="/blog" component={Blog} />
       <Route component={NotFound} />
     </Switch>
   );
