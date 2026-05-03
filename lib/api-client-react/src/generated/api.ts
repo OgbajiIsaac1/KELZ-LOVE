@@ -21,6 +21,8 @@ import type {
   AdminSession,
   BlogPost,
   BlogPostBody,
+  ContactSubmission,
+  ContactSubmissionBody,
   HealthStatus,
   ListBlogPostsParams,
   NewsletterSignupBody,
@@ -876,6 +878,252 @@ export const useUpdateSiteContent = <
   TContext
 > => {
   return useMutation(getUpdateSiteContentMutationOptions(options));
+};
+
+/**
+ * @summary Submit a contact form message
+ */
+export const getSubmitContactUrl = () => {
+  return `/api/contact-submissions`;
+};
+
+export const submitContact = async (
+  contactSubmissionBody: ContactSubmissionBody,
+  options?: RequestInit,
+): Promise<ContactSubmission> => {
+  return customFetch<ContactSubmission>(getSubmitContactUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(contactSubmissionBody),
+  });
+};
+
+export const getSubmitContactMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof submitContact>>,
+    TError,
+    { data: BodyType<ContactSubmissionBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof submitContact>>,
+  TError,
+  { data: BodyType<ContactSubmissionBody> },
+  TContext
+> => {
+  const mutationKey = ["submitContact"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof submitContact>>,
+    { data: BodyType<ContactSubmissionBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return submitContact(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SubmitContactMutationResult = NonNullable<
+  Awaited<ReturnType<typeof submitContact>>
+>;
+export type SubmitContactMutationBody = BodyType<ContactSubmissionBody>;
+export type SubmitContactMutationError = ErrorType<void>;
+
+/**
+ * @summary Submit a contact form message
+ */
+export const useSubmitContact = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof submitContact>>,
+    TError,
+    { data: BodyType<ContactSubmissionBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof submitContact>>,
+  TError,
+  { data: BodyType<ContactSubmissionBody> },
+  TContext
+> => {
+  return useMutation(getSubmitContactMutationOptions(options));
+};
+
+/**
+ * @summary List all contact submissions (admin)
+ */
+export const getListContactSubmissionsUrl = () => {
+  return `/api/contact-submissions`;
+};
+
+export const listContactSubmissions = async (
+  options?: RequestInit,
+): Promise<ContactSubmission[]> => {
+  return customFetch<ContactSubmission[]>(getListContactSubmissionsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListContactSubmissionsQueryKey = () => {
+  return [`/api/contact-submissions`] as const;
+};
+
+export const getListContactSubmissionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listContactSubmissions>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listContactSubmissions>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListContactSubmissionsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listContactSubmissions>>
+  > = ({ signal }) => listContactSubmissions({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listContactSubmissions>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListContactSubmissionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listContactSubmissions>>
+>;
+export type ListContactSubmissionsQueryError = ErrorType<void>;
+
+/**
+ * @summary List all contact submissions (admin)
+ */
+
+export function useListContactSubmissions<
+  TData = Awaited<ReturnType<typeof listContactSubmissions>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listContactSubmissions>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListContactSubmissionsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Mark a contact submission as read (admin)
+ */
+export const getMarkContactReadUrl = (id: number) => {
+  return `/api/contact-submissions/${id}/read`;
+};
+
+export const markContactRead = async (
+  id: number,
+  options?: RequestInit,
+): Promise<ContactSubmission> => {
+  return customFetch<ContactSubmission>(getMarkContactReadUrl(id), {
+    ...options,
+    method: "PATCH",
+  });
+};
+
+export const getMarkContactReadMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof markContactRead>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof markContactRead>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["markContactRead"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof markContactRead>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return markContactRead(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type MarkContactReadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof markContactRead>>
+>;
+
+export type MarkContactReadMutationError = ErrorType<void>;
+
+/**
+ * @summary Mark a contact submission as read (admin)
+ */
+export const useMarkContactRead = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof markContactRead>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof markContactRead>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getMarkContactReadMutationOptions(options));
 };
 
 /**

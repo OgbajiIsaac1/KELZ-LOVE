@@ -71,6 +71,21 @@ export interface AdminSession {
   authenticated: boolean;
 }
 
+export interface ContactSubmissionBody {
+  name: string;
+  email: string;
+  message: string;
+}
+
+export interface ContactSubmission {
+  id: number;
+  name: string;
+  email: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
 export type ListBlogPostsParams = {
   /**
    * If "true", return all posts including drafts (admin only)

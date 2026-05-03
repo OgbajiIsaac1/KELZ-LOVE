@@ -5,37 +5,40 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { WHATSAPP_LINK } from "@/lib/constants";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, CheckCircle2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { useSubmitContact } from "@workspace/api-client-react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
+type FormValues = z.infer<typeof formSchema>;
 
 export default function Contact() {
-  const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const [submitted, setSubmitted] = useState(false);
+  const submitContact = useSubmitContact();
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      message: "",
-    },
+    defaultValues: { name: "", email: "", message: "" },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Message sent!",
-      description: "Thank you for reaching out. We will get back to you shortly.",
-    });
-    form.reset();
+  function onSubmit(values: FormValues) {
+    submitContact.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          setSubmitted(true);
+          form.reset();
+        },
+      }
+    );
   }
 
   return (
@@ -43,7 +46,7 @@ export default function Contact() {
       <section className="py-20 lg:py-32 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid lg:grid-cols-2 gap-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
@@ -87,9 +90,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Location</p>
-                    <p className="text-lg font-semibold">
-                      Enugu, Nigeria
-                    </p>
+                    <p className="text-lg font-semibold">Enugu, Nigeria</p>
                   </div>
                 </div>
               </div>
@@ -104,61 +105,89 @@ export default function Contact() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="bg-card rounded-2xl border shadow-xl p-8 lg:p-10"
             >
-              <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your full name" {...field} className="h-12" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="your@email.com" {...field} className="h-12" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Message</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="How can I help you?" 
-                            className="min-h-[150px] resize-none" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full h-12 text-md">Send Message</Button>
-                </form>
-              </Form>
+              {submitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="h-full flex flex-col items-center justify-center text-center py-12 gap-5"
+                >
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                    <CheckCircle2 className="text-primary" size={32} />
+                  </div>
+                  <h2 className="text-2xl font-bold font-serif">Message received!</h2>
+                  <p className="text-muted-foreground max-w-xs leading-relaxed">
+                    Thank you for reaching out. Melvina personally reads every message and will get back to you soon.
+                  </p>
+                  <Button variant="outline" className="rounded-full mt-2" onClick={() => setSubmitted(false)}>
+                    Send another message
+                  </Button>
+                </motion.div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Your full name" {...field} className="h-12" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="your@email.com" {...field} className="h-12" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="message"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Message</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="How can I help you?"
+                                className="min-h-[150px] resize-none"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="submit"
+                        className="w-full h-12 text-md"
+                        disabled={submitContact.isPending}
+                        data-testid="button-send-message"
+                      >
+                        {submitContact.isPending ? "Sending..." : "Send Message"}
+                      </Button>
+                    </form>
+                  </Form>
+                </>
+              )}
             </motion.div>
           </div>
         </div>

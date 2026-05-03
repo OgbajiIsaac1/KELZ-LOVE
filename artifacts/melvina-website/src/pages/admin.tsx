@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,19 +23,22 @@ import {
   useListNewsletterSubscribers,
   useListSiteContent,
   useUpdateSiteContent,
+  useListContactSubmissions,
+  useMarkContactRead,
   getListBlogPostsQueryKey,
   getListNewsletterSubscribersQueryKey,
   getListSiteContentQueryKey,
   getAdminMeQueryKey,
+  getListContactSubmissionsQueryKey,
+  BlogPost,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BookOpen, Users, Settings, LogOut, Plus, Edit2, Trash2, Save, X,
-  Mail, Eye, EyeOff, ChevronLeft, BarChart2,
+  Mail, Eye, EyeOff, ChevronLeft, BarChart2, MessageSquare, CheckCheck, Circle,
 } from "lucide-react";
-import { BlogPost } from "@workspace/api-client-react";
 
-type Tab = "dashboard" | "blog" | "content" | "newsletter";
+type Tab = "dashboard" | "blog" | "content" | "newsletter" | "messages";
 
 const loginSchema = z.object({ password: z.string().min(1, "Password required") });
 type LoginValues = z.infer<typeof loginSchema>;
@@ -59,6 +62,7 @@ export default function Admin() {
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [editingContentKey, setEditingContentKey] = useState<string | null>(null);
   const [editingContentValue, setEditingContentValue] = useState("");
+  const [expandedMessage, setExpandedMessage] = useState<number | null>(null);
   const [loginError, setLoginError] = useState("");
 
   const qc = useQueryClient();
@@ -68,21 +72,27 @@ export default function Admin() {
   const login = useAdminLogin();
   const logout = useAdminLogout();
 
+  const isAuthed = session?.authenticated === true;
+
   const { data: posts, isLoading: postsLoading } = useListBlogPosts(
     { all: "true" },
-    { query: { enabled: session?.authenticated === true } }
+    { query: { enabled: isAuthed } }
   );
   const { data: subscribers, isLoading: subsLoading } = useListNewsletterSubscribers({
-    query: { enabled: session?.authenticated === true },
+    query: { enabled: isAuthed },
   });
   const { data: siteContent, isLoading: contentLoading } = useListSiteContent({
-    query: { enabled: session?.authenticated === true },
+    query: { enabled: isAuthed },
+  });
+  const { data: messages, isLoading: messagesLoading } = useListContactSubmissions({
+    query: { enabled: isAuthed, queryKey: getListContactSubmissionsQueryKey() },
   });
 
   const createPost = useCreateBlogPost();
   const updatePost = useUpdateBlogPost();
   const deletePost = useDeleteBlogPost();
   const updateContent = useUpdateSiteContent();
+  const markRead = useMarkContactRead();
 
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -183,11 +193,21 @@ export default function Admin() {
     );
   };
 
-  const tabs = [
-    { id: "dashboard" as Tab, label: "Dashboard", icon: BarChart2 },
-    { id: "blog" as Tab, label: "Blog Posts", icon: BookOpen },
-    { id: "content" as Tab, label: "Site Content", icon: Settings },
-    { id: "newsletter" as Tab, label: "Newsletter", icon: Mail },
+  const handleMarkRead = (id: number) => {
+    markRead.mutate(
+      { id },
+      { onSuccess: () => qc.invalidateQueries({ queryKey: getListContactSubmissionsQueryKey() }) }
+    );
+  };
+
+  const unreadCount = messages?.filter((m) => !m.read).length ?? 0;
+
+  const tabs: { id: Tab; label: string; icon: React.ElementType; badge?: number }[] = [
+    { id: "dashboard", label: "Dashboard", icon: BarChart2 },
+    { id: "blog", label: "Blog Posts", icon: BookOpen },
+    { id: "content", label: "Site Content", icon: Settings },
+    { id: "newsletter", label: "Newsletter", icon: Mail },
+    { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadCount },
   ];
 
   if (sessionLoading) {
@@ -261,13 +281,13 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-60 bg-card border-r border-border flex flex-col shrink-0 hidden md:flex">
+      <aside className="w-60 bg-card border-r border-border flex-col shrink-0 hidden md:flex">
         <div className="p-6 border-b border-border">
           <h2 className="font-serif font-bold text-primary text-lg leading-tight">Melvina CMS</h2>
           <p className="text-xs text-accent font-semibold tracking-widest uppercase">Admin Panel</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {tabs.map(({ id, label, icon: Icon }) => (
+          {tabs.map(({ id, label, icon: Icon, badge }) => (
             <button
               key={id}
               onClick={() => { setTab(id); setEditingPost(null); setIsCreatingPost(false); }}
@@ -279,7 +299,14 @@ export default function Admin() {
               data-testid={`tab-${id}`}
             >
               <Icon size={16} />
-              {label}
+              <span className="flex-1 text-left">{label}</span>
+              {badge != null && badge > 0 && (
+                <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${
+                  tab === id ? "bg-primary-foreground/20 text-primary-foreground" : "bg-destructive text-destructive-foreground"
+                }`}>
+                  {badge}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -300,17 +327,22 @@ export default function Admin() {
         </div>
       </aside>
 
-      {/* Mobile header */}
+      {/* Mobile bottom nav */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex">
-        {tabs.map(({ id, icon: Icon }) => (
+        {tabs.map(({ id, icon: Icon, badge }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-xs transition-colors ${
+            className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-xs transition-colors relative ${
               tab === id ? "text-primary" : "text-muted-foreground"
             }`}
           >
             <Icon size={18} />
+            {badge != null && badge > 0 && (
+              <span className="absolute top-1.5 right-1/4 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                {badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -319,7 +351,14 @@ export default function Admin() {
       <main className="flex-1 overflow-auto pb-16 md:pb-0">
         {/* Top bar */}
         <div className="border-b border-border bg-card/80 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-          <h1 className="font-semibold text-foreground">{tabs.find(t => t.id === tab)?.label}</h1>
+          <h1 className="font-semibold text-foreground flex items-center gap-2">
+            {tabs.find(t => t.id === tab)?.label}
+            {tab === "messages" && unreadCount > 0 && (
+              <span className="text-xs bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full font-bold">
+                {unreadCount} unread
+              </span>
+            )}
+          </h1>
           {tab === "blog" && !showingForm && (
             <Button size="sm" className="rounded-full gap-1.5" onClick={openCreate} data-testid="button-new-post">
               <Plus size={15} /> New Post
@@ -328,15 +367,17 @@ export default function Admin() {
         </div>
 
         <div className="p-6 max-w-5xl">
+
           {/* === DASHBOARD === */}
           {tab === "dashboard" && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {[
                   { label: "Published Posts", value: posts?.filter(p => p.published).length ?? "—", icon: BookOpen, color: "text-primary" },
-                  { label: "Draft Posts", value: posts?.filter(p => !p.published).length ?? "—", icon: EyeOff, color: "text-muted-foreground" },
+                  { label: "Drafts", value: posts?.filter(p => !p.published).length ?? "—", icon: EyeOff, color: "text-muted-foreground" },
                   { label: "Subscribers", value: subscribers?.length ?? "—", icon: Mail, color: "text-accent-foreground" },
                   { label: "Content Items", value: siteContent?.length ?? "—", icon: Settings, color: "text-emerald-600" },
+                  { label: "Unread Messages", value: unreadCount, icon: MessageSquare, color: unreadCount > 0 ? "text-destructive" : "text-muted-foreground" },
                 ].map(({ label, value, icon: Icon, color }) => (
                   <div key={label} className="bg-card border border-border/60 rounded-xl p-5">
                     <Icon size={20} className={`${color} mb-3`} />
@@ -354,8 +395,8 @@ export default function Admin() {
                   <Button variant="outline" size="sm" className="rounded-full" onClick={() => setTab("content")}>
                     Edit Site Content
                   </Button>
-                  <Button variant="outline" size="sm" className="rounded-full" onClick={() => setTab("newsletter")}>
-                    View Subscribers
+                  <Button variant="outline" size="sm" className="rounded-full" onClick={() => setTab("messages")}>
+                    View Messages {unreadCount > 0 && `(${unreadCount} unread)`}
                   </Button>
                 </div>
               </div>
@@ -448,11 +489,9 @@ export default function Admin() {
                             <FormControl>
                               <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-post-published" />
                             </FormControl>
-                            <div>
-                              <FormLabel className="text-sm font-medium cursor-pointer">
-                                {field.value ? "Published — visible to visitors" : "Draft — only visible to you"}
-                              </FormLabel>
-                            </div>
+                            <FormLabel className="text-sm font-medium cursor-pointer">
+                              {field.value ? "Published — visible to visitors" : "Draft — only visible to you"}
+                            </FormLabel>
                           </div>
                         </FormItem>
                       )} />
@@ -476,15 +515,10 @@ export default function Admin() {
                     <div className="text-center py-16 text-muted-foreground">
                       <BookOpen size={36} className="mx-auto mb-3 opacity-30" />
                       <p className="font-medium">No posts yet</p>
-                      <p className="text-sm">Create your first blog post to get started.</p>
                     </div>
                   ) : (
                     posts?.map((post) => (
-                      <div
-                        key={post.id}
-                        className="bg-card border border-border/60 rounded-xl p-5 flex items-start gap-4"
-                        data-testid={`post-item-${post.id}`}
-                      >
+                      <div key={post.id} className="bg-card border border-border/60 rounded-xl p-5 flex items-start gap-4" data-testid={`post-item-${post.id}`}>
                         {post.imageUrl && (
                           <img src={post.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0 hidden sm:block" />
                         )}
@@ -519,14 +553,12 @@ export default function Admin() {
           {/* === SITE CONTENT === */}
           {tab === "content" && (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground mb-6">
-                Edit the text that appears across your website. Changes are saved immediately.
-              </p>
+              <p className="text-sm text-muted-foreground mb-6">Edit the text that appears across your website.</p>
               {contentLoading ? (
                 Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)
               ) : siteContent?.length === 0 ? (
                 <div className="bg-muted/50 rounded-xl p-8 text-center text-muted-foreground text-sm">
-                  No content items found. They will appear here once the site generates default content.
+                  No content items found.
                 </div>
               ) : (
                 siteContent?.map((item) => (
@@ -541,13 +573,7 @@ export default function Admin() {
                     </div>
                     {editingContentKey === item.key ? (
                       <div className="space-y-3">
-                        <Textarea
-                          value={editingContentValue}
-                          onChange={(e) => setEditingContentValue(e.target.value)}
-                          rows={4}
-                          className="resize-none text-sm"
-                          data-testid={`textarea-content-${item.key}`}
-                        />
+                        <Textarea value={editingContentValue} onChange={(e) => setEditingContentValue(e.target.value)} rows={4} className="resize-none text-sm" data-testid={`textarea-content-${item.key}`} />
                         <div className="flex gap-2">
                           <Button size="sm" className="gap-1.5 h-8" onClick={() => handleSaveContent(item.key)} disabled={updateContent.isPending} data-testid={`button-save-content-${item.key}`}>
                             <Save size={12} /> {updateContent.isPending ? "Saving..." : "Save"}
@@ -582,7 +608,7 @@ export default function Admin() {
                 Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)
               ) : subscribers?.length === 0 ? (
                 <div className="bg-muted/50 rounded-xl p-8 text-center text-muted-foreground text-sm">
-                  No subscribers yet. Share the newsletter form to get your first signups.
+                  No subscribers yet.
                 </div>
               ) : (
                 <div className="bg-card border border-border/60 rounded-xl overflow-hidden">
@@ -604,6 +630,96 @@ export default function Admin() {
               )}
             </div>
           )}
+
+          {/* === MESSAGES === */}
+          {tab === "messages" && (
+            <div className="space-y-3">
+              {messagesLoading ? (
+                Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)
+              ) : messages?.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                  <MessageSquare size={36} className="mx-auto mb-3 opacity-30" />
+                  <p className="font-medium">No messages yet</p>
+                  <p className="text-sm mt-1">Messages from your contact form will appear here.</p>
+                </div>
+              ) : (
+                messages?.map((msg) => {
+                  const isExpanded = expandedMessage === msg.id;
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`bg-card border rounded-xl overflow-hidden transition-all duration-200 ${
+                        !msg.read ? "border-primary/30 shadow-sm" : "border-border/60"
+                      }`}
+                      data-testid={`message-${msg.id}`}
+                    >
+                      <div
+                        className="p-5 cursor-pointer"
+                        onClick={() => setExpandedMessage(isExpanded ? null : msg.id)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 shrink-0">
+                            {msg.read ? (
+                              <CheckCheck size={16} className="text-muted-foreground" />
+                            ) : (
+                              <Circle size={16} className="text-primary fill-primary" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                              <div className="flex items-center gap-2">
+                                <span className={`font-semibold text-sm ${!msg.read ? "text-foreground" : "text-muted-foreground"}`}>
+                                  {msg.name}
+                                </span>
+                                <span className="text-xs text-muted-foreground">{msg.email}</span>
+                                {!msg.read && (
+                                  <Badge className="text-[10px] bg-primary/10 text-primary border-0 font-semibold px-1.5 py-0">New</Badge>
+                                )}
+                              </div>
+                              <span className="text-xs text-muted-foreground shrink-0">
+                                {new Date(msg.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                              </span>
+                            </div>
+                            <p className={`text-sm mt-1 ${isExpanded ? "" : "line-clamp-2"} ${!msg.read ? "text-foreground/80" : "text-muted-foreground"}`}>
+                              {msg.message}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isExpanded && (
+                        <div className="px-5 pb-5 pt-0 border-t border-border/50 mt-0">
+                          <div className="bg-muted/40 rounded-lg p-4 mt-3 mb-4">
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                          </div>
+                          <div className="flex gap-3 flex-wrap">
+                            <a href={`mailto:${msg.email}?subject=Re: Your message to Melvina Igboanugo`}>
+                              <Button size="sm" className="rounded-full gap-1.5 h-8">
+                                <Mail size={13} /> Reply via Email
+                              </Button>
+                            </a>
+                            {!msg.read && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full gap-1.5 h-8"
+                                onClick={() => handleMarkRead(msg.id)}
+                                disabled={markRead.isPending}
+                                data-testid={`button-mark-read-${msg.id}`}
+                              >
+                                <CheckCheck size={13} /> Mark as Read
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+
         </div>
       </main>
     </div>

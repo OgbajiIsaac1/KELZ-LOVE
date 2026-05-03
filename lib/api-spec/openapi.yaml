@@ -217,6 +217,65 @@ paths:
         "401":
           description: Unauthorized
 
+  /contact-submissions:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit a contact form message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactSubmissionBody"
+      responses:
+        "201":
+          description: Submission saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactSubmission"
+        "400":
+          description: Validation error
+    get:
+      operationId: listContactSubmissions
+      tags: [contact]
+      summary: List all contact submissions (admin)
+      responses:
+        "200":
+          description: List of submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactSubmission"
+        "401":
+          description: Unauthorized
+
+  /contact-submissions/{id}/read:
+    patch:
+      operationId: markContactRead
+      tags: [contact]
+      summary: Mark a contact submission as read (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated submission
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactSubmission"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
   /admin/login:
     post:
       operationId: adminLogin
@@ -410,3 +469,40 @@ components:
           type: boolean
       required:
         - authenticated
+
+    ContactSubmissionBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - message
+
+    ContactSubmission:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        message:
+          type: string
+        read:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - message
+        - read
+        - createdAt

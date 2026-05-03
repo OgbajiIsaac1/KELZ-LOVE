@@ -167,6 +167,46 @@ export const UpdateSiteContentResponse = zod.object({
 });
 
 /**
+ * @summary Submit a contact form message
+ */
+export const SubmitContactBody = zod.object({
+  name: zod.string(),
+  email: zod.string(),
+  message: zod.string(),
+});
+
+/**
+ * @summary List all contact submissions (admin)
+ */
+export const ListContactSubmissionsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  message: zod.string(),
+  read: zod.boolean(),
+  createdAt: zod.string(),
+});
+export const ListContactSubmissionsResponse = zod.array(
+  ListContactSubmissionsResponseItem,
+);
+
+/**
+ * @summary Mark a contact submission as read (admin)
+ */
+export const MarkContactReadParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const MarkContactReadResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  message: zod.string(),
+  read: zod.boolean(),
+  createdAt: zod.string(),
+});
+
+/**
  * @summary Admin login
  */
 export const AdminLoginBody = zod.object({
