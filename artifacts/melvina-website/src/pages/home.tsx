@@ -2,7 +2,8 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { WHATSAPP_LINK } from "@/lib/constants";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Award, BookOpen, GraduationCap, Presentation } from "lucide-react";
 
 import heroImg from "@/assets/images/hero.png";
@@ -11,10 +12,17 @@ import teacherImg from "@/assets/images/teacher-workshop.png";
 import schoolImg from "@/assets/images/school-admin.png";
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const imageParallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
+
   return (
     <Layout>
       {/* Hero Section — cobalt blue + gold from photo */}
-      <section className="relative py-20 lg:py-32 overflow-hidden home-hero-bg">
+      <section ref={heroRef} className="relative py-20 lg:py-32 overflow-hidden home-hero-bg">
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 left-0 w-80 h-80 rounded-full bg-[#1e4fc8]/8 blur-3xl" />
@@ -34,16 +42,7 @@ export default function Home() {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
               Raising Readers. Building Thinkers.{" "}
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #1a4fc8 0%, #d4a017 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                Transforming Education.
-              </span>
+              <span className="text-gradient">Transforming Education.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
               I help students, educators, and schools build strong literacy, clear expression, and systems that produce real learning outcomes.
@@ -77,40 +76,40 @@ export default function Home() {
                 { label: "Years Experience", value: "6+" },
               ].map((s) => (
                 <div key={s.label}>
-                  <div
-                    className="text-2xl font-bold"
-                    style={{ background: "linear-gradient(135deg, #1a4fc8, #d4a017)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
-                  >
-                    {s.value}
-                  </div>
+                  <div className="text-2xl font-bold text-gradient">{s.value}</div>
                   <div className="text-xs text-muted-foreground font-medium">{s.label}</div>
                 </div>
               ))}
             </div>
           </motion.div>
 
+          {/* PARALLAX hero image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative"
           >
-            {/* Gold border frame accent */}
+            {/* Gold-blue gradient border frame */}
             <div
               className="absolute -inset-3 rounded-3xl opacity-60"
-              style={{ background: "linear-gradient(135deg, #1a4fc8 0%, #d4a017 50%, #1a4fc8 100%)", padding: "2px" }}
-            >
-              <div className="w-full h-full rounded-3xl bg-transparent" />
-            </div>
+              style={{
+                background: "linear-gradient(135deg, #1a4fc8 0%, #d4a017 50%, #1a4fc8 100%)",
+                padding: "2px",
+                borderRadius: "1.25rem",
+              }}
+            />
+            {/* overflow-hidden so parallax image moves without spilling */}
             <div className="relative rounded-2xl overflow-hidden img-blue-glow aspect-video lg:aspect-[4/5]">
-              <img
+              <motion.img
                 src={heroImg}
                 alt="Melvina Igboanugo mentoring"
-                className="object-cover w-full h-full"
+                className="object-cover w-full h-full scale-110"
+                style={{ y: imageParallaxY }}
               />
-              {/* Subtle cobalt tint overlay at bottom */}
+              {/* Cobalt tint at bottom */}
               <div
-                className="absolute inset-0"
+                className="absolute inset-0 pointer-events-none"
                 style={{ background: "linear-gradient(to top, rgba(26, 79, 200, 0.15) 0%, transparent 50%)" }}
               />
             </div>
@@ -123,13 +122,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-90">
             <div className="flex items-center gap-2 font-medium text-sm md:text-base text-foreground">
-              <Award className="text-[#1a4fc8]" /> Enugu State Maltina Teacher of the Year (2023)
+              <Award className="text-primary" /> Enugu State Maltina Teacher of the Year (2023)
             </div>
             <div className="flex items-center gap-2 font-medium text-sm md:text-base text-foreground">
-              <GraduationCap className="text-[#1a4fc8]" /> Director of Studies, Roseville Secondary School
+              <GraduationCap className="text-primary" /> Director of Studies, Roseville Secondary School
             </div>
             <div className="flex items-center gap-2 font-medium text-sm md:text-base text-foreground">
-              <BookOpen className="text-[#1a4fc8]" /> Global School Advocate (UNESCO / SDSN)
+              <BookOpen className="text-primary" /> Global School Advocate (UNESCO / SDSN)
             </div>
           </div>
         </div>
@@ -139,28 +138,16 @@ export default function Home() {
       <section className="py-24 home-whatido-bg">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#d4a017] mb-3">What I Do</span>
+            <span className="inline-block text-xs font-bold tracking-widest uppercase text-accent mb-3">What I Do</span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Empowering Every Corner of Education</h2>
             <p className="text-muted-foreground text-lg">Empowering the entire educational ecosystem through targeted interventions and strategic support.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                title: "Student Development",
-                desc: "Helping learners become confident readers, writers, and thinkers.",
-                img: studentImg,
-              },
-              {
-                title: "Educator Growth",
-                desc: "Supporting teachers to build strong niches and impactful careers.",
-                img: teacherImg,
-              },
-              {
-                title: "School Support",
-                desc: "Partnering with schools to improve curriculum delivery and outcomes.",
-                img: schoolImg,
-              },
+              { title: "Student Development", desc: "Helping learners become confident readers, writers, and thinkers.", img: studentImg, accent: "#1a4fc8" },
+              { title: "Educator Growth", desc: "Supporting teachers to build strong niches and impactful careers.", img: teacherImg, accent: "#d4a017" },
+              { title: "School Support", desc: "Partnering with schools to improve curriculum delivery and outcomes.", img: schoolImg, accent: "#1a4fc8" },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -169,7 +156,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 className="group bg-card rounded-2xl border overflow-hidden hover:shadow-xl transition-all duration-300"
-                style={{ borderColor: i === 1 ? "rgba(212, 160, 23, 0.35)" : undefined }}
+                style={{ borderColor: i === 1 ? "rgba(212, 160, 23, 0.35)" : "hsl(var(--border))" }}
               >
                 <div className="aspect-video overflow-hidden relative">
                   <img
@@ -179,11 +166,11 @@ export default function Home() {
                   />
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: "linear-gradient(to top, rgba(26, 79, 200, 0.18) 0%, transparent 60%)" }}
+                    style={{ background: `linear-gradient(to top, ${item.accent}28 0%, transparent 60%)` }}
                   />
                 </div>
                 <div className="p-6">
-                  <div className="w-8 h-1 rounded-full mb-3" style={{ background: "linear-gradient(90deg, #1a4fc8, #d4a017)" }} />
+                  <div className="w-8 h-1 rounded-full mb-3" style={{ background: `linear-gradient(90deg, ${item.accent}, ${item.accent}66)` }} />
                   <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                   <p className="text-muted-foreground">{item.desc}</p>
                 </div>
@@ -197,7 +184,7 @@ export default function Home() {
       <section className="py-24 home-serve-bg">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#1a4fc8] mb-3">Who I Serve</span>
+            <span className="inline-block text-xs font-bold tracking-widest uppercase text-primary mb-3">Who I Serve</span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Tailored for Every Stage</h2>
             <p className="text-muted-foreground text-lg">Tailored approaches for every stage of the educational journey.</p>
           </div>
@@ -211,11 +198,14 @@ export default function Home() {
               <div
                 key={i}
                 className="bg-card p-6 rounded-xl border text-center hover:shadow-lg transition-all group"
-                style={{ borderColor: "rgba(30, 79, 200, 0.15)" }}
+                style={{ borderColor: "rgba(26, 79, 200, 0.15)" }}
               >
                 <div
                   className="w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
-                  style={{ background: `linear-gradient(135deg, ${audience.color}18, ${audience.color}08)`, border: `1.5px solid ${audience.color}30` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${audience.color}18, ${audience.color}08)`,
+                    border: `1.5px solid ${audience.color}30`,
+                  }}
                 >
                   <audience.icon className="w-7 h-7" style={{ color: audience.color }} />
                 </div>
@@ -245,8 +235,8 @@ export default function Home() {
           <Link href="/programs">
             <Button
               size="lg"
-              className="rounded-full h-14 px-10 text-lg font-semibold"
-              style={{ background: "linear-gradient(135deg, #d4a017, #c8921a)", color: "#fff", border: "none" }}
+              className="rounded-full h-14 px-10 text-lg font-semibold border-none"
+              style={{ background: "linear-gradient(135deg, #d4a017, #c8921a)", color: "#fff" }}
             >
               Explore Programs
             </Button>

@@ -1,9 +1,17 @@
 import { Layout } from "@/components/layout/Layout";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Target, Heart, Zap, BookOpen, Star } from "lucide-react";
 import profileImg from "@/assets/images/profile.png";
 
 export default function About() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const imageParallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+
   const values = [
     { title: "Excellence", icon: Star, desc: "Setting the highest standards in every educational endeavor." },
     { title: "Growth", icon: Target, desc: "Fostering continuous personal and professional development." },
@@ -15,7 +23,7 @@ export default function About() {
   return (
     <Layout>
       {/* Hero — fuchsia pink + navy blue from profile photo */}
-      <section className="py-20 lg:py-32 about-hero-bg relative overflow-hidden">
+      <section ref={heroRef} className="py-20 lg:py-32 about-hero-bg relative overflow-hidden">
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-10 w-80 h-80 rounded-full bg-[#e91e8c]/8 blur-3xl" />
@@ -25,13 +33,14 @@ export default function About() {
 
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* PARALLAX profile image */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              {/* Pink-navy border frame accent */}
+              {/* Pink-navy gradient border frame */}
               <div
                 className="absolute -inset-3 rounded-3xl opacity-70"
                 style={{
@@ -39,18 +48,18 @@ export default function About() {
                   padding: "2px",
                   borderRadius: "1.25rem",
                 }}
-              >
-                <div className="w-full h-full rounded-3xl bg-transparent" />
-              </div>
+              />
+              {/* overflow-hidden clips parallax movement */}
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden img-pink-glow">
-                <img
+                <motion.img
                   src={profileImg}
                   alt="Melvina Igboanugo"
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full scale-110"
+                  style={{ y: imageParallaxY }}
                 />
-                {/* Subtle navy tint at bottom */}
+                {/* Navy tint at bottom */}
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 pointer-events-none"
                   style={{ background: "linear-gradient(to top, rgba(26, 35, 126, 0.18) 0%, transparent 55%)" }}
                 />
               </div>
@@ -85,10 +94,7 @@ export default function About() {
               </h1>
 
               {/* Pink accent bar */}
-              <div
-                className="w-16 h-1.5 rounded-full"
-                style={{ background: "linear-gradient(90deg, #e91e8c, #1a237e)" }}
-              />
+              <div className="w-16 h-1.5 rounded-full" style={{ background: "linear-gradient(90deg, #e91e8c, #1a237e)" }} />
 
               <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
                 <p>
@@ -171,10 +177,7 @@ export default function About() {
       <section className="py-24 about-values-bg">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span
-              className="inline-block text-xs font-bold tracking-widest uppercase mb-3"
-              style={{ color: "#c01070" }}
-            >
+            <span className="inline-block text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#c01070" }}>
               Our Core Values
             </span>
             <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Principles That Guide Us</h2>
@@ -194,7 +197,10 @@ export default function About() {
               >
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"
-                  style={{ background: "linear-gradient(135deg, rgba(233,30,140,0.12), rgba(26,35,126,0.08))", border: "1.5px solid rgba(233,30,140,0.20)" }}
+                  style={{
+                    background: "linear-gradient(135deg, rgba(233,30,140,0.12), rgba(26,35,126,0.08))",
+                    border: "1.5px solid rgba(233,30,140,0.20)",
+                  }}
                 >
                   <value.icon className="w-6 h-6" style={{ color: "#c01070" }} />
                 </div>

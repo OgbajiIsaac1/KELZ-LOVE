@@ -65,7 +65,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* LIGHT MODE — The Education Enthusiast */
+/* LIGHT MODE — The Education Enthusiast — Royal Blue + Gold */
 :root {
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
@@ -75,54 +75,54 @@
 
   /* Warm ivory — feels like pages of a beloved book */
   --background: 42 35% 97%;
-  --foreground: 258 38% 12%;
+  --foreground: 220 38% 12%;
 
-  /* Pure white cards with soft shadow contrast */
+  /* Pure white cards */
   --card: 0 0% 100%;
-  --card-foreground: 258 38% 12%;
-  --card-border: 262 18% 88%;
+  --card-foreground: 220 38% 12%;
+  --card-border: 220 22% 88%;
 
   --sidebar: 42 35% 97%;
-  --sidebar-foreground: 258 38% 12%;
-  --sidebar-border: 262 18% 88%;
-  --sidebar-primary: 262 60% 42%;
+  --sidebar-foreground: 220 38% 12%;
+  --sidebar-border: 220 22% 88%;
+  --sidebar-primary: 220 73% 44%;
   --sidebar-primary-foreground: 42 35% 97%;
   --sidebar-accent: 38 85% 52%;
-  --sidebar-accent-foreground: 258 38% 12%;
-  --sidebar-ring: 262 60% 42%;
+  --sidebar-accent-foreground: 220 38% 12%;
+  --sidebar-ring: 220 73% 44%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 258 38% 12%;
-  --popover-border: 262 18% 88%;
+  --popover-foreground: 220 38% 12%;
+  --popover-border: 220 22% 88%;
 
-  /* Royal Purple — distinguished, passionate, authoritative */
-  --primary: 262 60% 42%;
+  /* Royal Blue — cobalt, confident, professional */
+  --primary: 220 73% 44%;
   --primary-foreground: 42 35% 97%;
 
-  /* Soft lavender secondary */
-  --secondary: 262 30% 94%;
-  --secondary-foreground: 262 60% 38%;
+  /* Soft sky-blue secondary */
+  --secondary: 220 40% 94%;
+  --secondary-foreground: 220 73% 36%;
 
   /* Warm neutral muted */
   --muted: 42 20% 92%;
-  --muted-foreground: 258 15% 48%;
+  --muted-foreground: 220 15% 48%;
 
   /* Golden amber accent — warmth, excellence, achievement */
   --accent: 38 85% 52%;
-  --accent-foreground: 258 38% 12%;
+  --accent-foreground: 220 38% 12%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 42 35% 97%;
 
-  --border: 262 18% 88%;
-  --input: 262 18% 88%;
-  --ring: 262 60% 42%;
+  --border: 220 22% 88%;
+  --input: 220 22% 88%;
+  --ring: 220 73% 44%;
 
-  --chart-1: 262 60% 42%;
+  --chart-1: 220 73% 44%;
   --chart-2: 38 85% 52%;
   --chart-3: 160 50% 45%;
   --chart-4: 200 60% 50%;
-  --chart-5: 320 50% 55%;
+  --chart-5: 175 50% 45%;
 
   --radius: 0.875rem;
 
@@ -130,14 +130,14 @@
   --app-font-serif: 'Playfair Display', serif;
   --app-font-mono: 'Menlo', monospace;
 
-  --shadow-2xs: 0px 1px 2px 0px hsl(262 60% 42% / 0.06);
-  --shadow-xs: 0px 2px 4px 0px hsl(262 60% 42% / 0.08);
-  --shadow-sm: 0px 2px 8px 0px hsl(262 60% 42% / 0.08), 0px 1px 2px -1px hsl(262 60% 42% / 0.06);
-  --shadow: 0px 4px 12px 0px hsl(262 60% 42% / 0.10), 0px 2px 4px -2px hsl(262 60% 42% / 0.06);
-  --shadow-md: 0px 8px 20px 0px hsl(262 60% 42% / 0.10), 0px 2px 4px -1px hsl(262 60% 42% / 0.06);
-  --shadow-lg: 0px 12px 30px 0px hsl(262 60% 42% / 0.12), 0px 4px 8px -2px hsl(262 60% 42% / 0.08);
-  --shadow-xl: 0px 20px 48px 0px hsl(262 60% 42% / 0.14), 0px 8px 12px -4px hsl(262 60% 42% / 0.10);
-  --shadow-2xl: 0px 32px 64px 0px hsl(262 60% 42% / 0.18);
+  --shadow-2xs: 0px 1px 2px 0px hsl(220 73% 44% / 0.06);
+  --shadow-xs: 0px 2px 4px 0px hsl(220 73% 44% / 0.08);
+  --shadow-sm: 0px 2px 8px 0px hsl(220 73% 44% / 0.08), 0px 1px 2px -1px hsl(220 73% 44% / 0.06);
+  --shadow: 0px 4px 12px 0px hsl(220 73% 44% / 0.10), 0px 2px 4px -2px hsl(220 73% 44% / 0.06);
+  --shadow-md: 0px 8px 20px 0px hsl(220 73% 44% / 0.10), 0px 2px 4px -1px hsl(220 73% 44% / 0.06);
+  --shadow-lg: 0px 12px 30px 0px hsl(220 73% 44% / 0.12), 0px 4px 8px -2px hsl(220 73% 44% / 0.08);
+  --shadow-xl: 0px 20px 48px 0px hsl(220 73% 44% / 0.14), 0px 8px 12px -4px hsl(220 73% 44% / 0.10);
+  --shadow-2xl: 0px 32px 64px 0px hsl(220 73% 44% / 0.18);
 
   /* Auto-computed borders */
   --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -156,59 +156,59 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 258 40% 8%;
+  --background: 220 40% 8%;
   --foreground: 42 35% 95%;
 
-  --card: 258 35% 11%;
+  --card: 220 35% 11%;
   --card-foreground: 42 35% 95%;
-  --card-border: 262 25% 20%;
+  --card-border: 220 25% 20%;
 
-  --sidebar: 258 40% 8%;
+  --sidebar: 220 40% 8%;
   --sidebar-foreground: 42 35% 95%;
-  --sidebar-border: 262 25% 20%;
-  --sidebar-primary: 262 60% 68%;
-  --sidebar-primary-foreground: 258 40% 8%;
+  --sidebar-border: 220 25% 20%;
+  --sidebar-primary: 220 73% 68%;
+  --sidebar-primary-foreground: 220 40% 8%;
   --sidebar-accent: 38 85% 56%;
-  --sidebar-accent-foreground: 258 40% 8%;
-  --sidebar-ring: 262 60% 68%;
+  --sidebar-accent-foreground: 220 40% 8%;
+  --sidebar-ring: 220 73% 68%;
 
-  --popover: 258 35% 11%;
+  --popover: 220 35% 11%;
   --popover-foreground: 42 35% 95%;
-  --popover-border: 262 25% 20%;
+  --popover-border: 220 25% 20%;
 
-  --primary: 262 60% 68%;
-  --primary-foreground: 258 40% 8%;
+  --primary: 220 73% 68%;
+  --primary-foreground: 220 40% 8%;
 
-  --secondary: 262 25% 18%;
+  --secondary: 220 30% 18%;
   --secondary-foreground: 42 35% 95%;
 
-  --muted: 258 25% 16%;
-  --muted-foreground: 262 15% 62%;
+  --muted: 220 25% 16%;
+  --muted-foreground: 220 15% 62%;
 
   --accent: 38 85% 56%;
-  --accent-foreground: 258 40% 8%;
+  --accent-foreground: 220 40% 8%;
 
   --destructive: 0 62% 45%;
   --destructive-foreground: 42 35% 95%;
 
-  --border: 262 25% 20%;
-  --input: 262 25% 20%;
-  --ring: 262 60% 68%;
+  --border: 220 25% 20%;
+  --input: 220 25% 20%;
+  --ring: 220 73% 68%;
 
-  --chart-1: 262 60% 68%;
+  --chart-1: 220 73% 68%;
   --chart-2: 38 85% 56%;
   --chart-3: 160 50% 55%;
   --chart-4: 200 60% 60%;
-  --chart-5: 320 50% 65%;
+  --chart-5: 175 50% 55%;
 
-  --shadow-2xs: 0px 1px 2px 0px hsl(262 60% 68% / 0.04);
-  --shadow-xs: 0px 2px 4px 0px hsl(262 60% 68% / 0.06);
-  --shadow-sm: 0px 2px 8px 0px hsl(262 60% 68% / 0.06), 0px 1px 2px -1px hsl(262 60% 68% / 0.04);
-  --shadow: 0px 4px 12px 0px hsl(262 60% 68% / 0.08), 0px 2px 4px -2px hsl(262 60% 68% / 0.04);
-  --shadow-md: 0px 8px 20px 0px hsl(262 60% 68% / 0.08), 0px 2px 4px -1px hsl(262 60% 68% / 0.04);
-  --shadow-lg: 0px 12px 30px 0px hsl(262 60% 68% / 0.10), 0px 4px 8px -2px hsl(262 60% 68% / 0.06);
-  --shadow-xl: 0px 20px 48px 0px hsl(262 60% 68% / 0.12), 0px 8px 12px -4px hsl(262 60% 68% / 0.08);
-  --shadow-2xl: 0px 32px 64px 0px hsl(262 60% 68% / 0.16);
+  --shadow-2xs: 0px 1px 2px 0px hsl(220 73% 68% / 0.04);
+  --shadow-xs: 0px 2px 4px 0px hsl(220 73% 68% / 0.06);
+  --shadow-sm: 0px 2px 8px 0px hsl(220 73% 68% / 0.06), 0px 1px 2px -1px hsl(220 73% 68% / 0.04);
+  --shadow: 0px 4px 12px 0px hsl(220 73% 68% / 0.08), 0px 2px 4px -2px hsl(220 73% 68% / 0.04);
+  --shadow-md: 0px 8px 20px 0px hsl(220 73% 68% / 0.08), 0px 2px 4px -1px hsl(220 73% 68% / 0.04);
+  --shadow-lg: 0px 12px 30px 0px hsl(220 73% 68% / 0.10), 0px 4px 8px -2px hsl(220 73% 68% / 0.06);
+  --shadow-xl: 0px 20px 48px 0px hsl(220 73% 68% / 0.12), 0px 8px 12px -4px hsl(220 73% 68% / 0.08);
+  --shadow-2xl: 0px 32px 64px 0px hsl(220 73% 68% / 0.16);
 
   --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -315,9 +315,9 @@
     border-radius: 2px;
   }
 
-  /* Gradient text utility */
+  /* Gradient text utility — cobalt blue → gold */
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(38 85% 52%));
+    background: linear-gradient(135deg, #1a4fc8, #d4a017);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -411,16 +411,16 @@
   }
 
   /* ──────────────────────────────────────────
-     OTHER PAGES — Gold + Royal Purple/Blue
+     OTHER PAGES — Gold + Royal Blue
      (blog, programs, impact, contact)
   ────────────────────────────────────────── */
 
-  /* Page hero header gradient — gold sunrise from top-right */
+  /* Page hero header gradient — gold sunrise from top-right, blue from bottom-left */
   .page-header-bg {
     background:
       radial-gradient(ellipse 70% 70% at 100% 0%, rgba(212, 160, 23, 0.10) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 60% at 0% 100%, rgba(107, 33, 168, 0.08) 0%, transparent 60%),
-      linear-gradient(155deg, hsl(42 35% 97%) 0%, hsl(262 30% 96%) 100%);
+      radial-gradient(ellipse 50% 60% at 0% 100%, rgba(26, 79, 200, 0.08) 0%, transparent 60%),
+      linear-gradient(155deg, hsl(42 35% 97%) 0%, hsl(220 40% 96%) 100%);
   }
 
   /* Alternating warm gold section */
@@ -430,24 +430,24 @@
       linear-gradient(135deg, hsl(38 50% 97%) 0%, hsl(42 35% 97%) 100%);
   }
 
-  /* Alternating soft purple section */
+  /* Alternating soft blue section (was purple) */
   .section-purple-bg {
     background:
-      radial-gradient(ellipse 60% 60% at 0% 50%, rgba(107, 33, 168, 0.07) 0%, transparent 60%),
-      linear-gradient(135deg, hsl(262 30% 97%) 0%, hsl(42 35% 98%) 100%);
+      radial-gradient(ellipse 60% 60% at 0% 50%, rgba(26, 79, 200, 0.07) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(220 40% 97%) 0%, hsl(42 35% 98%) 100%);
   }
 
-  /* Rich purple-gold CTA for other pages */
+  /* Rich blue-gold CTA for other pages */
   .section-primary-gradient {
     background:
-      radial-gradient(ellipse 50% 70% at 100% 50%, rgba(212, 160, 23, 0.22) 0%, transparent 60%),
-      linear-gradient(135deg, hsl(262 60% 42%) 0%, hsl(262 65% 32%) 100%);
+      radial-gradient(ellipse 50% 70% at 100% 50%, rgba(212, 160, 23, 0.25) 0%, transparent 60%),
+      linear-gradient(135deg, #1a4fc8 0%, #1e3a8a 100%);
   }
 
-  /* Purple tinted section backgrounds (kept for blog) */
+  /* Blue-gold subtle tinted section (for blog hero) */
   .bg-primary-subtle {
     background: 
       radial-gradient(ellipse 60% 60% at 100% 0%, rgba(212, 160, 23, 0.08) 0%, transparent 60%),
-      linear-gradient(135deg, hsl(262 60% 42% / 0.07), hsl(38 85% 52% / 0.05));
+      linear-gradient(135deg, rgba(26, 79, 200, 0.07), rgba(212, 160, 23, 0.05));
   }
 }
