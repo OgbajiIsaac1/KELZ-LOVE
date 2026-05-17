@@ -53,10 +53,10 @@ export default function Blog() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="py-20 lg:py-28 bg-primary-subtle border-b border-border/50 relative overflow-hidden">
+      <section className="py-20 lg:py-28 page-header-bg border-b border-border/50 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#d4a017]/8 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-primary/6 blur-3xl" />
         </div>
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
@@ -204,7 +204,7 @@ export default function Blog() {
       </section>
 
       {/* Free Resources */}
-      <section className="py-16 lg:py-20 border-t border-border/50 bg-card/50">
+      <section className="py-16 lg:py-20 border-t border-border/50 section-gold-bg">
         <div className="container mx-auto px-4 md:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <span className="text-xs font-bold tracking-widest text-accent uppercase mb-3 block">Free Resources</span>
@@ -239,7 +239,7 @@ export default function Blog() {
       </section>
 
       {/* YouTube */}
-      <section className="py-16 lg:py-20 bg-primary-subtle border-t border-border/50">
+      <section className="py-16 lg:py-20 section-purple-bg border-t border-border/50">
         <div className="container mx-auto px-4 md:px-6">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>

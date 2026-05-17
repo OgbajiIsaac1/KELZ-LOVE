@@ -323,8 +323,131 @@
     background-clip: text;
   }
 
-  /* Purple tinted section backgrounds */
+  /* ──────────────────────────────────────────
+     HOME PAGE — Royal Blue + Gold
+     (extracted from hero photo: cobalt blazer,
+      gold desk trim, warm mahogany wood)
+  ────────────────────────────────────────── */
+
+  /* Full hero gradient: cobalt blue left → warm cream right */
+  .home-hero-bg {
+    background:
+      radial-gradient(ellipse 70% 80% at -5% 50%, rgba(30, 79, 200, 0.13) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 60% at 105% 10%, rgba(212, 160, 23, 0.11) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 105% 100%, rgba(30, 79, 200, 0.07) 0%, transparent 55%),
+      linear-gradient(155deg, #eef3ff 0%, #fdf8ef 55%, #fff9f0 100%);
+  }
+
+  /* Trust strip: faint cobalt blue wash */
+  .home-trust-bg {
+    background: linear-gradient(90deg, rgba(30, 79, 200, 0.07) 0%, rgba(212, 160, 23, 0.06) 50%, rgba(30, 79, 200, 0.05) 100%);
+  }
+
+  /* "What I Do" section: warm golden ivory */
+  .home-whatido-bg {
+    background:
+      radial-gradient(ellipse 60% 60% at 100% 0%, rgba(212, 160, 23, 0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 0% 100%, rgba(30, 79, 200, 0.06) 0%, transparent 55%),
+      linear-gradient(160deg, #fdf8ef 0%, #fefcf7 100%);
+  }
+
+  /* "Who I Serve" section: soft cobalt blue */
+  .home-serve-bg {
+    background:
+      radial-gradient(ellipse 60% 60% at 0% 50%, rgba(30, 79, 200, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 100% 50%, rgba(212, 160, 23, 0.07) 0%, transparent 55%),
+      linear-gradient(135deg, #eef3ff 0%, #f5f8ff 50%, #fdf8ef 100%);
+  }
+
+  /* CTA section: deep cobalt to midnight blue with gold shimmer */
+  .home-cta-bg {
+    background:
+      radial-gradient(ellipse 50% 70% at 100% 50%, rgba(212, 160, 23, 0.25) 0%, transparent 60%),
+      linear-gradient(135deg, #1a4fc8 0%, #1e3a8a 45%, #0f1f5c 100%);
+  }
+
+  /* Blue glow around the hero image */
+  .img-blue-glow {
+    box-shadow:
+      0 24px 64px rgba(30, 79, 200, 0.22),
+      0 0 0 3px rgba(212, 160, 23, 0.35),
+      0 0 0 6px rgba(30, 79, 200, 0.10);
+  }
+
+  /* ──────────────────────────────────────────
+     ABOUT PAGE — Fuchsia/Pink + Navy Blue
+     (extracted from profile photo: hot pink top,
+      deep navy trousers, warm neutral backdrop)
+  ────────────────────────────────────────── */
+
+  /* Full about hero: faint pink bloom top-right, navy bloom bottom-left */
+  .about-hero-bg {
+    background:
+      radial-gradient(ellipse 65% 65% at 105% 0%, rgba(233, 30, 140, 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 55% at -5% 100%, rgba(26, 35, 126, 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(233, 30, 140, 0.03) 0%, transparent 60%),
+      linear-gradient(155deg, #fff5fb 0%, #f5f4ff 55%, #f0f2ff 100%);
+  }
+
+  /* Vision/Mission section: deep navy */
+  .about-navy-bg {
+    background: linear-gradient(135deg, #1a237e 0%, #13196b 50%, #0e1454 100%);
+  }
+
+  /* Core values section: subtle fuchsia warmth */
+  .about-values-bg {
+    background:
+      radial-gradient(ellipse 60% 60% at 100% 0%, rgba(233, 30, 140, 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 50% at 0% 100%, rgba(26, 35, 126, 0.06) 0%, transparent 55%),
+      linear-gradient(160deg, #fff8fc 0%, #f8f7ff 100%);
+  }
+
+  /* Fuchsia glow around profile image */
+  .img-pink-glow {
+    box-shadow:
+      0 24px 64px rgba(233, 30, 140, 0.20),
+      0 0 0 3px rgba(26, 35, 126, 0.25),
+      0 0 0 6px rgba(233, 30, 140, 0.08);
+  }
+
+  /* ──────────────────────────────────────────
+     OTHER PAGES — Gold + Royal Purple/Blue
+     (blog, programs, impact, contact)
+  ────────────────────────────────────────── */
+
+  /* Page hero header gradient — gold sunrise from top-right */
+  .page-header-bg {
+    background:
+      radial-gradient(ellipse 70% 70% at 100% 0%, rgba(212, 160, 23, 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 0% 100%, rgba(107, 33, 168, 0.08) 0%, transparent 60%),
+      linear-gradient(155deg, hsl(42 35% 97%) 0%, hsl(262 30% 96%) 100%);
+  }
+
+  /* Alternating warm gold section */
+  .section-gold-bg {
+    background:
+      radial-gradient(ellipse 60% 60% at 100% 50%, rgba(212, 160, 23, 0.08) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(38 50% 97%) 0%, hsl(42 35% 97%) 100%);
+  }
+
+  /* Alternating soft purple section */
+  .section-purple-bg {
+    background:
+      radial-gradient(ellipse 60% 60% at 0% 50%, rgba(107, 33, 168, 0.07) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(262 30% 97%) 0%, hsl(42 35% 98%) 100%);
+  }
+
+  /* Rich purple-gold CTA for other pages */
+  .section-primary-gradient {
+    background:
+      radial-gradient(ellipse 50% 70% at 100% 50%, rgba(212, 160, 23, 0.22) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(262 60% 42%) 0%, hsl(262 65% 32%) 100%);
+  }
+
+  /* Purple tinted section backgrounds (kept for blog) */
   .bg-primary-subtle {
-    background: linear-gradient(135deg, hsl(262 60% 42% / 0.06), hsl(38 85% 52% / 0.04));
+    background: 
+      radial-gradient(ellipse 60% 60% at 100% 0%, rgba(212, 160, 23, 0.08) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(262 60% 42% / 0.07), hsl(38 85% 52% / 0.05));
   }
 }
