@@ -10,6 +10,7 @@ import { BookOpen, Clock, ArrowRight, Search, TrendingUp, Users, School } from "
 import { SOCIAL_LINKS, WHATSAPP_LINK } from "@/lib/constants";
 import { FaYoutube } from "react-icons/fa";
 import { useListBlogPosts } from "@workspace/api-client-react";
+import { usePageTitle } from "@/lib/seo";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 const categories = ["All", "Literacy", "Teaching", "Leadership", "Students", "Schools"];
@@ -31,6 +32,7 @@ const resources = [
 ];
 
 export default function Blog() {
+  usePageTitle("Blog");
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -145,7 +147,7 @@ export default function Blog() {
                 >
                   {post.imageUrl ? (
                     <div className="aspect-video overflow-hidden bg-muted">
-                      <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={post.imageUrl} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
                   ) : (
                     <div className="px-6 pt-8 pb-4 bg-primary/6 flex items-start justify-between">

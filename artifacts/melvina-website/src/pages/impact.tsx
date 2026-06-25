@@ -2,11 +2,13 @@ import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 
+import { usePageTitle } from "@/lib/seo";
 import impactStudentImg from "@/assets/images/impact-student.png";
 import impactEducatorImg from "@/assets/images/impact-educator.png";
 import impactSchoolImg from "@/assets/images/impact-school.png";
 
 export default function Impact() {
+  usePageTitle("Impact");
   const impacts = [
     {
       title: "Student Impact",
@@ -105,7 +107,14 @@ export default function Impact() {
                       className="rounded-2xl overflow-hidden shadow-2xl aspect-video"
                       style={{ boxShadow: `0 20px 60px ${item.accent}28, 0 0 0 3px ${item.accent}22` }}
                     >
-                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                      <motion.img
+                        src={item.img}
+                        alt={item.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        whileHover={{ scale: 1.08 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      />
                     </div>
                   </motion.div>
 

@@ -1,11 +1,13 @@
 import { Layout } from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { WHATSAPP_LINK } from "@/lib/constants";
 import { motion } from "framer-motion";
+import { WHATSAPP_LINK } from "@/lib/constants";
+import { usePageTitle } from "@/lib/seo";
 import { CheckCircle2 } from "lucide-react";
 import { PaystackButton } from "react-paystack";
+import { Button } from "@/components/ui/button";
 
 export default function Programs() {
+  usePageTitle("Programs");
   const paystackPublicKey = "YOUR_PAYSTACK_PUBLIC_KEY";
 
   const studentPrograms = [
@@ -124,16 +126,20 @@ export default function Programs() {
                   ))}
                 </ul>
 
-                <PaystackButton
-                  email="client@example.com"
-                  amount={prog.price * 100 * 1500}
-                  publicKey={paystackPublicKey}
-                  text="Enroll Now"
-                  onSuccess={() => alert("Payment complete!")}
-                  onClose={() => alert("Payment cancelled")}
-                  className="w-full h-12 rounded-md font-medium transition-all text-white"
-                  style={{ background: `linear-gradient(135deg, ${prog.accent}, ${prog.accent}cc)` } as React.CSSProperties}
-                />
+                <div
+                  className="w-full h-12 rounded-md overflow-hidden"
+                  style={{ background: `linear-gradient(135deg, ${prog.accent}, ${prog.accent}cc)` }}
+                >
+                  <PaystackButton
+                    email="client@example.com"
+                    amount={prog.price * 100 * 1500}
+                    publicKey={paystackPublicKey}
+                    text="Enroll Now"
+                    onSuccess={() => alert("Payment complete!")}
+                    onClose={() => alert("Payment cancelled")}
+                    className="w-full h-full font-medium transition-all text-white bg-transparent"
+                  />
+                </div>
               </motion.div>
             ))}
           </div>

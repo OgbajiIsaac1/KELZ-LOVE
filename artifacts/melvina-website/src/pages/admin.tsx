@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation } from "wouter";
+import { usePageTitle } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,6 +57,7 @@ const blogSchema = z.object({
 type BlogValues = z.infer<typeof blogSchema>;
 
 export default function Admin() {
+  usePageTitle("Admin");
   const [, setLocation] = useLocation();
   const [tab, setTab] = useState<Tab>("dashboard");
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -76,13 +78,13 @@ export default function Admin() {
 
   const { data: posts, isLoading: postsLoading } = useListBlogPosts(
     { all: "true" },
-    { query: { enabled: isAuthed } }
+    { query: { enabled: isAuthed, queryKey: getListBlogPostsQueryKey({ all: "true" }) } }
   );
   const { data: subscribers, isLoading: subsLoading } = useListNewsletterSubscribers({
-    query: { enabled: isAuthed },
+    query: { enabled: isAuthed, queryKey: getListNewsletterSubscribersQueryKey() },
   });
   const { data: siteContent, isLoading: contentLoading } = useListSiteContent({
-    query: { enabled: isAuthed },
+    query: { enabled: isAuthed, queryKey: getListSiteContentQueryKey() },
   });
   const { data: messages, isLoading: messagesLoading } = useListContactSubmissions({
     query: { enabled: isAuthed, queryKey: getListContactSubmissionsQueryKey() },
@@ -119,7 +121,7 @@ export default function Admin() {
   };
 
   const handleLogout = () => {
-    logout.mutate({}, {
+    logout.mutate(undefined, {
       onSuccess: () => qc.invalidateQueries({ queryKey: getAdminMeQueryKey() }),
     });
   };
@@ -520,7 +522,7 @@ export default function Admin() {
                     posts?.map((post) => (
                       <div key={post.id} className="bg-card border border-border/60 rounded-xl p-5 flex items-start gap-4" data-testid={`post-item-${post.id}`}>
                         {post.imageUrl && (
-                          <img src={post.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0 hidden sm:block" />
+                          <img src={post.imageUrl} alt="" loading="lazy" className="w-16 h-16 rounded-lg object-cover shrink-0 hidden sm:block" />
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">

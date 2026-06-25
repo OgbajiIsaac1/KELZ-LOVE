@@ -27,7 +27,11 @@ app.use(
   }),
 );
 
-app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = [
+  "https://sr-janes-testimony.netlify.app",
+  ...(process.env.NODE_ENV === "development" ? ["http://localhost:3000", "http://localhost:3002"] : []),
+];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

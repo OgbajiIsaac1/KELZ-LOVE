@@ -2,9 +2,11 @@ import { Layout } from "@/components/layout/Layout";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Target, Heart, Zap, BookOpen, Star } from "lucide-react";
+import { usePageTitle } from "@/lib/seo";
 import profileImg from "@/assets/images/profile.png";
 
 export default function About() {
+  usePageTitle("About");
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -56,6 +58,8 @@ export default function About() {
                   alt="Melvina Igboanugo"
                   className="object-cover w-full h-full scale-110"
                   style={{ y: imageParallaxY }}
+                  whileHover={{ scale: 1.15 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
                 {/* Navy tint at bottom */}
                 <div

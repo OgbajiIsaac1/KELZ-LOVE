@@ -1,20 +1,20 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import { useParams, Link } from "wouter";
+import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Clock, Calendar, Tag } from "lucide-react";
-import { useGetBlogPost, useListBlogPosts } from "@workspace/api-client-react";
+import { ArrowLeft, Clock, Calendar } from "lucide-react";
+import { useGetBlogPost, useListBlogPosts, getGetBlogPostQueryKey } from "@workspace/api-client-react";
 import { WHATSAPP_LINK } from "@/lib/constants";
+import { usePageTitle } from "@/lib/seo";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
-export default function BlogPost() {
-  const params = useParams<{ id: string }>();
-  const id = parseInt(params.id ?? "0", 10);
+export default function BlogPost({ id: idStr }: { id?: string }) {
+  const id = parseInt(idStr ?? "0", 10);
 
   const { data: post, isLoading, isError } = useGetBlogPost(id, {
-    query: { enabled: !!id },
+    query: { enabled: !!id, queryKey: getGetBlogPostQueryKey(id) },
   });
 
   const { data: allPosts } = useListBlogPosts();
@@ -50,6 +50,8 @@ export default function BlogPost() {
       </Layout>
     );
   }
+
+  usePageTitle(post?.title);
 
   const publishDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
@@ -98,7 +100,14 @@ export default function BlogPost() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="rounded-2xl overflow-hidden aspect-video shadow-xl border border-border/40"
           >
-            <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+            <motion.img
+              src={post.imageUrl}
+              alt={post.title}
+              loading="lazy"
+              className="w-full h-full object-cover"
+              whileHover={{ scale: 1.06 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            />
           </motion.div>
         </div>
       )}

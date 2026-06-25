@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { WHATSAPP_LINK } from "@/lib/constants";
+import { usePageTitle } from "@/lib/seo";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, CheckCircle2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -27,6 +28,7 @@ const contactItems = [
 ];
 
 export default function Contact() {
+  usePageTitle("Contact");
   const [submitted, setSubmitted] = useState(false);
   const submitContact = useSubmitContact();
 

@@ -6,12 +6,14 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Award, BookOpen, GraduationCap, Presentation } from "lucide-react";
 
+import { usePageTitle } from "@/lib/seo";
 import heroImg from "@/assets/images/hero.png";
 import studentImg from "@/assets/images/student-reading.png";
 import teacherImg from "@/assets/images/teacher-workshop.png";
 import schoolImg from "@/assets/images/school-admin.png";
 
 export default function Home() {
+  usePageTitle("Home");
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -106,6 +108,8 @@ export default function Home() {
                 alt="Melvina Igboanugo mentoring"
                 className="object-cover w-full h-full scale-110"
                 style={{ y: imageParallaxY }}
+                whileHover={{ scale: 1.15 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               />
               {/* Cobalt tint at bottom */}
               <div
@@ -162,6 +166,7 @@ export default function Home() {
                   <img
                     src={item.img}
                     alt={item.title}
+                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div
