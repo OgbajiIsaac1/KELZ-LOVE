@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { WHATSAPP_LINK } from "@/lib/constants";
 import { FaWhatsapp } from "react-icons/fa";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -60,7 +61,8 @@ export function Navbar() {
               </span>
             </Link>
           ))}
-          <div className="ml-3">
+          <ThemeToggle />
+          <div className="ml-2">
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
               <Button className="rounded-full px-5 gap-2 shadow-sm" size="sm">
                 <FaWhatsapp size={15} />
@@ -98,6 +100,10 @@ export function Navbar() {
                 </span>
               </Link>
             ))}
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm text-muted-foreground">Appearance</span>
+              <ThemeToggle />
+            </div>
             <div className="pt-2 pb-1">
               <a
                 href={WHATSAPP_LINK}
