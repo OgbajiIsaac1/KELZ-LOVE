@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,7 +37,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BookOpen, Settings, LogOut, Plus, Edit2, Trash2, Save, X,
-  Mail, Eye, EyeOff, ChevronLeft, BarChart2, MessageSquare, CheckCheck, Circle,
+  Mail, Eye, EyeOff, ChevronLeft, BarChart2, MessageSquare, CheckCheck, Circle, Upload,
 } from "lucide-react";
 
 type Tab = "dashboard" | "blog" | "content" | "newsletter" | "messages";
@@ -67,6 +67,8 @@ export default function Admin() {
   const [showNewContent, setShowNewContent] = useState(false);
   const [newContentKey, setNewContentKey] = useState("");
   const [newContentValue, setNewContentValue] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [expandedMessage, setExpandedMessage] = useState<number | null>(null);
   const [loginError, setLoginError] = useState("");
 
@@ -111,6 +113,30 @@ export default function Admin() {
       tag: "General", readTime: "5 min read", imageUrl: "", published: false,
     },
   });
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "melvina_blog");
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/t8xamdqu/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.secure_url) {
+        blogForm.setValue("imageUrl", data.secure_url);
+      }
+    } catch {
+      // silent
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
 
   const handleLogin = (values: LoginValues) => {
     setLoginError("");
@@ -491,7 +517,23 @@ export default function Admin() {
                         <FormField control={blogForm.control} name="imageUrl" render={({ field }) => (
                           <FormItem>
                             <FormLabel>Image URL (optional)</FormLabel>
-                            <FormControl><Input placeholder="https://..." className="h-11" {...field} data-testid="input-post-image" /></FormControl>
+                            <div className="flex gap-2">
+                              <FormControl>
+                                <Input placeholder="https://..." className="h-11 flex-1" {...field} data-testid="input-post-image" />
+                              </FormControl>
+                              <input type="file" accept="image/*" ref={fileRef} onChange={handleUpload} className="hidden" />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-11 w-11 shrink-0"
+                                disabled={uploading}
+                                onClick={() => fileRef.current?.click()}
+                                title="Upload image"
+                              >
+                                <Upload size={16} className={uploading ? "animate-spin" : ""} />
+                              </Button>
+                            </div>
                             <FormMessage />
                           </FormItem>
                         )} />
