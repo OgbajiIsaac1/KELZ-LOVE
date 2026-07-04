@@ -1,14 +1,94 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { WHATSAPP_LINK } from "@/lib/constants";
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from "@/lib/seo";
 import { CheckCircle2 } from "lucide-react";
 import { PaystackButton } from "react-paystack";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+
+function PaystackEnrollButton({
+  amount,
+  email: initialEmail,
+  onEmailRequired,
+  text,
+  publicKey,
+  className,
+  onSuccess,
+  onClose,
+}: {
+  amount: number;
+  email: string;
+  onEmailRequired: () => void;
+  text: string;
+  publicKey: string;
+  className?: string;
+  onSuccess?: () => void;
+  onClose?: () => void;
+}) {
+  if (!publicKey) {
+    return (
+      <div className="w-full h-12 rounded-md bg-muted flex items-center justify-center text-xs text-muted-foreground px-2 text-center">
+        Payments unavailable — configure VITE_PAYSTACK_PUBLIC_KEY
+      </div>
+    );
+  }
+
+  if (!initialEmail) {
+    return (
+      <button
+        type="button"
+        onClick={onEmailRequired}
+        className={`w-full h-12 rounded-md font-medium transition-all text-white ${className ?? ""}`}
+      >
+        {text}
+      </button>
+    );
+  }
+
+  return (
+    <PaystackButton
+      email={initialEmail}
+      amount={amount}
+      publicKey={publicKey}
+      text={text}
+      onSuccess={() => onSuccess?.()}
+      onClose={() => onClose?.()}
+      className={`w-full h-12 rounded-md font-medium transition-all text-white ${className ?? ""}`}
+    />
+  );
+}
+
+const programsFaq = [
+  {
+    question: "What age groups do the student programs cover?",
+    answer: "Student programs are designed for three age brackets: Ages 10–13 (foundational reading and vocabulary), Ages 14–17 (analytical writing and exam prep), and Ages 18–22 (advanced academic writing and career readiness).",
+  },
+  {
+    question: "How long are the programs and how often do sessions run?",
+    answer: "Student sessions run 40 minutes twice monthly for one year (Ages 10–13) or six months (Ages 14–17). Ages 18–22 sessions are 1 hour twice monthly. The educator mentorship is 1 hour monthly for six months.",
+  },
+  {
+    question: "How much do the programs cost?",
+    answer: "Student programs range from $10–$15 per month depending on the age bracket. Educator mentorship is $15 per month. School consulting is custom-priced based on the institution's needs.",
+  },
+  {
+    question: "Do you offer school consulting services?",
+    answer: "Yes, school consulting covers curriculum evaluation, literacy development strategies, teacher training, and academic leadership structuring. Pricing is customized per engagement.",
+  },
+  {
+    question: "How can I enroll or book a consultation?",
+    answer: "You can enroll in student or educator programs directly on this page via the Paystack payment buttons. For school consulting, use the WhatsApp link to book a consultation.",
+  },
+];
 
 export default function Programs() {
-  usePageTitle("Programs");
-  const paystackPublicKey = "YOUR_PAYSTACK_PUBLIC_KEY";
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [emailPromptFor, setEmailPromptFor] = useState<number | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ?? "";
 
   const studentPrograms = [
     {
@@ -39,7 +119,67 @@ export default function Programs() {
   ];
 
   return (
-    <Layout>
+    <>
+      <SeoHead
+        title="Programs"
+        description="Structured mentorship pathways for students (Ages 10–22), educators, and schools. Build literacy, clear expression, and academic systems that produce real results."
+        ogDescription="Mentorship programs for students (Ages 10–22), educators, and schools — literacy, academic writing, teacher training, and school consulting."
+        canonicalPath="/programs"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": `${SITE_URL}/programs#webpage`,
+            url: `${SITE_URL}/programs`,
+            name: "Programs | Melvina Igboanugo — The Education Enthusiast",
+            description: "Structured mentorship pathways for students (Ages 10–22), educators, and schools.",
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            breadcrumb: { "@id": `${SITE_URL}/programs#breadcrumb` },
+            speakable: {
+              "@type": "SpeakableSpecification",
+              cssSelector: ["h1", "h2", ".faq-question"],
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/programs#breadcrumb`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Programs", item: `${SITE_URL}/programs` },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "@id": `${SITE_URL}/programs#faq`,
+            mainEntity: programsFaq.map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: { "@type": "Answer", text: faq.answer },
+            })),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to Enroll in a Mentorship Program",
+            description: "Steps to join Melvina Igboanugo's student or educator mentorship programs.",
+            step: [
+              { "@type": "HowToStep", position: 1, name: "Choose a Program", text: "Select the program that matches your age group or role — student (Ages 10–22), educator, or school." },
+              { "@type": "HowToStep", position: 2, name: "Enter Your Email", text: "Provide your email address to set up payment via the Paystack enrollment button." },
+              { "@type": "HowToStep", position: 3, name: "Complete Payment", text: "Pay the monthly fee securely through Paystack to confirm your spot." },
+              { "@type": "HowToStep", position: 4, name: "Start Learning", text: "Receive your session schedule and begin your structured mentorship journey." },
+            ],
+          },
+        ]}
+      />
+      <Layout>
+      {paymentStatus && (
+        <div className={`px-4 py-3 text-center text-sm font-medium ${paymentStatus.type === "success" ? "bg-emerald-50 text-emerald-800 border-b border-emerald-200" : "bg-red-50 text-red-800 border-b border-red-200"}`}>
+          {paymentStatus.message}
+          <button onClick={() => setPaymentStatus(null)} className="ml-3 underline">Dismiss</button>
+        </div>
+      )}
       {/* Page Header — gold + purple gradient */}
       <section className="py-20 lg:py-28 page-header-bg relative overflow-hidden border-b border-border/40">
         <div className="absolute inset-0 pointer-events-none">
@@ -126,19 +266,42 @@ export default function Programs() {
                   ))}
                 </ul>
 
-                <div
-                  className="w-full h-12 rounded-md overflow-hidden"
-                  style={{ background: `linear-gradient(135deg, ${prog.accent}, ${prog.accent}cc)` }}
-                >
-                  <PaystackButton
-                    email="client@example.com"
-                    amount={prog.price * 100 * 1500}
-                    publicKey={paystackPublicKey}
-                    text="Enroll Now"
-                    onSuccess={() => alert("Payment complete!")}
-                    onClose={() => alert("Payment cancelled")}
-                    className="w-full h-full font-medium transition-all text-white bg-transparent"
-                  />
+                <div className="space-y-2">
+                  {emailPromptFor === i && (
+                    <div className="flex gap-2">
+                      <Input
+                        type="email"
+                        placeholder="Your email"
+                        value={pendingEmail}
+                        onChange={(e) => setPendingEmail(e.target.value)}
+                        className="h-10 text-sm"
+                        autoFocus
+                      />
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="shrink-0 h-10"
+                        onClick={() => setEmailPromptFor(null)}
+                      >
+                        Done
+                      </Button>
+                    </div>
+                  )}
+                  <div
+                    className="w-full h-12 rounded-md overflow-hidden"
+                    style={{ background: `linear-gradient(135deg, ${prog.accent}, ${prog.accent}cc)` }}
+                  >
+                    <PaystackEnrollButton
+                      amount={prog.price * 100 * 1500}
+                      email={emailPromptFor === i ? pendingEmail : ""}
+                      onEmailRequired={() => { setEmailPromptFor(i); setPendingEmail(""); }}
+                      text="Enroll Now"
+                      publicKey={paystackPublicKey}
+                      className="w-full h-full font-medium transition-all text-white bg-transparent"
+                      onSuccess={() => setPaymentStatus({ type: "success", message: "Payment complete! You'll receive a confirmation shortly." })}
+                      onClose={() => setPaymentStatus({ type: "error", message: "Payment was cancelled. You can try again anytime." })}
+                    />
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -179,15 +342,33 @@ export default function Programs() {
                 <li className="flex items-start gap-2 text-sm"><CheckCircle2 className="w-5 h-5 text-primary shrink-0" /><span>Building a personal brand in education</span></li>
                 <li className="flex items-start gap-2 text-sm"><CheckCircle2 className="w-5 h-5 text-primary shrink-0" /><span>Strategic career progression planning</span></li>
               </ul>
-              <PaystackButton
-                email="educator@example.com"
-                amount={15 * 100 * 1500}
-                publicKey={paystackPublicKey}
-                text="Join Mentorship"
-                onSuccess={() => alert("Payment complete!")}
-                onClose={() => alert("Payment cancelled")}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-md font-medium transition-colors"
-              />
+              <div className="space-y-2">
+                {emailPromptFor === 99 && (
+                  <div className="flex gap-2">
+                    <Input
+                      type="email"
+                      placeholder="Your email"
+                      value={pendingEmail}
+                      onChange={(e) => setPendingEmail(e.target.value)}
+                      className="h-10 text-sm"
+                      autoFocus
+                    />
+                    <Button size="sm" variant="secondary" className="shrink-0 h-10" onClick={() => setEmailPromptFor(null)}>
+                      Done
+                    </Button>
+                  </div>
+                )}
+                <PaystackEnrollButton
+                  amount={15 * 100 * 1500}
+                  email={emailPromptFor === 99 ? pendingEmail : ""}
+                  onEmailRequired={() => { setEmailPromptFor(99); setPendingEmail(""); }}
+                  text="Join Mentorship"
+                  publicKey={paystackPublicKey}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-md font-medium transition-colors"
+                  onSuccess={() => setPaymentStatus({ type: "success", message: "Payment complete! You'll receive a confirmation shortly." })}
+                  onClose={() => setPaymentStatus({ type: "error", message: "Payment was cancelled. You can try again anytime." })}
+                />
+              </div>
             </motion.div>
 
             {/* School Consulting */}
@@ -227,5 +408,6 @@ export default function Programs() {
         </div>
       </section>
     </Layout>
+    </>
   );
 }

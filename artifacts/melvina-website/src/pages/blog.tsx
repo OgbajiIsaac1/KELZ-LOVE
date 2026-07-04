@@ -6,11 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Clock, ArrowRight, Search, TrendingUp, Users, School } from "lucide-react";
+import { BookOpen, Clock, ArrowRight, Search } from "lucide-react";
 import { SOCIAL_LINKS, WHATSAPP_LINK } from "@/lib/constants";
 import { FaYoutube } from "react-icons/fa";
 import { useListBlogPosts } from "@workspace/api-client-react";
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from "@/lib/seo";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 const categories = ["All", "Literacy", "Teaching", "Leadership", "Students", "Schools"];
@@ -31,10 +32,12 @@ const resources = [
   { title: "5-Step Essay Structure for Students (Ages 14–22)", desc: "A printable framework that demystifies academic writing. Clear enough for students, rigorous enough for exams.", type: "Free Download", icon: "📝" },
 ];
 
+const POSTS_PER_PAGE = 6;
+
 export default function Blog() {
-  usePageTitle("Blog");
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
 
   const { data: posts, isLoading } = useListBlogPosts();
 
@@ -47,13 +50,58 @@ export default function Blog() {
     return matchCat && matchSearch;
   });
 
+  const visiblePosts = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   const fadeUp = {
     hidden: { opacity: 0, y: 24 },
     visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.07, duration: 0.5 } }),
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setVisibleCount(POSTS_PER_PAGE);
+  };
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    setVisibleCount(POSTS_PER_PAGE);
+  };
+
   return (
-    <Layout>
+    <>
+      <SeoHead
+        title="Blog"
+        description="Practical perspectives on literacy, teaching, and learning from Melvina Igboanugo — drawn from real classrooms and over six years of education leadership."
+        ogDescription="Insights on literacy, teaching, and learning from an award-winning educator — practical, classroom-tested, and free of theory for theory's sake."
+        canonicalPath="/blog"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "@id": `${SITE_URL}/blog#webpage`,
+            url: `${SITE_URL}/blog`,
+            name: "Blog | Melvina Igboanugo — The Education Enthusiast",
+            description: "Practical perspectives on literacy, teaching, and learning from Melvina Igboanugo.",
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            breadcrumb: { "@id": `${SITE_URL}/blog#breadcrumb` },
+            speakable: {
+              "@type": "SpeakableSpecification",
+              cssSelector: ["h1", "h2"],
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/blog#breadcrumb`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+            ],
+          },
+        ]}
+      />
+      <Layout>
       {/* Hero */}
       <section className="py-20 lg:py-28 page-header-bg border-b border-border/50 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -78,7 +126,7 @@ export default function Blog() {
                 placeholder="Search articles and resources..."
                 className="pl-10 rounded-full bg-card border-border/60 h-11"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 data-testid="input-search"
               />
             </div>
@@ -94,7 +142,7 @@ export default function Blog() {
               <button
                 key={cat}
                 data-testid={`filter-${cat}`}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                   activeCategory === cat
                     ? "bg-primary text-primary-foreground shadow-sm"
@@ -131,69 +179,92 @@ export default function Blog() {
               <BookOpen size={40} className="mx-auto mb-4 opacity-30" />
               <p className="text-lg font-medium">No articles found</p>
               <p className="text-sm mt-1">Try a different category or search term.</p>
+              {(searchQuery || activeCategory !== "All") && (
+                <button
+                  onClick={() => { setSearchQuery(""); setActiveCategory("All"); setVisibleCount(POSTS_PER_PAGE); }}
+                  className="mt-4 text-sm text-primary hover:underline"
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filtered.map((post, i) => (
-                <motion.article
-                  key={post.id}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
-                  className="bg-card border border-border/60 rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
-                  data-testid={`card-post-${post.id}`}
-                >
-                  {post.imageUrl ? (
-                    <div className="aspect-video overflow-hidden bg-muted">
-                      <img src={post.imageUrl} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                  ) : (
-                    <div className="px-6 pt-8 pb-4 bg-primary/6 flex items-start justify-between">
-                      <BookOpen size={28} className="text-primary opacity-60" />
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${tagColors[post.tag] ?? "bg-muted text-muted-foreground"}`}>
-                        {post.tag}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline" className="text-xs font-medium border-border/60 text-muted-foreground">
-                        {post.category}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock size={11} /> {post.readTime}
-                      </span>
-                    </div>
-
-                    <h2 className="font-serif text-lg font-bold mb-3 leading-snug group-hover:text-primary transition-colors">
-                      {post.title}
-                    </h2>
-                    <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-
-                    <div className="mt-6 flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
-                        {post.publishedAt
-                          ? new Date(post.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                          : new Date(post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                      </span>
-                      <Link href={`/blog/${post.id}`}>
-                        <span
-                          className="text-xs font-semibold text-primary flex items-center gap-1 hover:gap-2 transition-all cursor-pointer"
-                          data-testid={`link-read-${post.id}`}
-                        >
-                          Read more <ArrowRight size={12} />
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {visiblePosts.map((post, i) => (
+                  <motion.article
+                    key={post.id}
+                    custom={i}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp}
+                    className="bg-card border border-border/60 rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                    data-testid={`card-post-${post.id}`}
+                  >
+                    {post.imageUrl ? (
+                      <div className="aspect-video overflow-hidden bg-muted">
+                        <img src={post.imageUrl} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                    ) : (
+                      <div className="px-6 pt-8 pb-4 bg-primary/6 flex items-start justify-between">
+                        <BookOpen size={28} className="text-primary opacity-60" />
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${tagColors[post.tag] ?? "bg-muted text-muted-foreground"}`}>
+                          {post.tag}
                         </span>
-                      </Link>
+                      </div>
+                    )}
+
+                    <div className="p-6 flex flex-col flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="outline" className="text-xs font-medium border-border/60 text-muted-foreground">
+                          {post.category}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock size={11} /> {post.readTime}
+                        </span>
+                      </div>
+
+                      <h2 className="font-serif text-lg font-bold mb-3 leading-snug group-hover:text-primary transition-colors">
+                        {post.title}
+                      </h2>
+                      <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+
+                      <div className="mt-6 flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          {post.publishedAt
+                            ? new Date(post.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                            : new Date(post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        </span>
+                        <Link href={`/blog/${post.id}`}>
+                          <span
+                            className="text-xs font-semibold text-primary flex items-center gap-1 hover:gap-2 transition-all cursor-pointer"
+                            data-testid={`link-read-${post.id}`}
+                          >
+                            Read more <ArrowRight size={12} />
+                          </span>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
+                  </motion.article>
+                ))}
+              </div>
+
+              {hasMore && (
+                <div className="flex justify-center mt-12">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="rounded-full px-8 gap-2"
+                    onClick={() => setVisibleCount((prev) => prev + POSTS_PER_PAGE)}
+                  >
+                    Load More Articles
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -262,5 +333,6 @@ export default function Blog() {
         </div>
       </section>
     </Layout>
+    </>
   );
 }

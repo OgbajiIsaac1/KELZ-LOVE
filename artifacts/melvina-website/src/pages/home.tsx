@@ -4,16 +4,18 @@ import { WHATSAPP_LINK } from "@/lib/constants";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useSiteContent } from "@/lib/useSiteContent";
 import { Award, BookOpen, GraduationCap, Presentation } from "lucide-react";
 
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL, SITE_NAME, DEFAULT_DESC } from "@/lib/seo";
 import heroImg from "@/assets/images/hero.png";
 import studentImg from "@/assets/images/student-reading.png";
 import teacherImg from "@/assets/images/teacher-workshop.png";
 import schoolImg from "@/assets/images/school-admin.png";
 
 export default function Home() {
-  usePageTitle("Home");
+  const { getContent } = useSiteContent();
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -22,6 +24,58 @@ export default function Home() {
   const imageParallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
   return (
+    <>
+      <SeoHead
+        title="Home"
+        description="Melvina Igboanugo — Education leader, mentor, and learning strategist helping students, educators, and schools build literacy, confidence, and systems that deliver real learning outcomes."
+        ogDescription="Raising Readers. Building Thinkers. Transforming Education — join Melvina Igboanugo's mission to transform learning."
+        canonicalPath="/"
+        ogType="website"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "@id": `${SITE_URL}/#person`,
+            name: "Melvina Igboanugo",
+            alternateName: "The Education Enthusiast",
+            jobTitle: "Education Leader, Mentor, and Learning Strategist",
+            image: `${SITE_URL}/opengraph.jpg`,
+            url: SITE_URL,
+            sameAs: [
+              "https://www.youtube.com/@melvinaigboanugo2526",
+              "https://www.linkedin.com/in/melvina-igboanugo-b4261b193",
+              "https://www.instagram.com/the_educationenthusiast",
+              "https://www.facebook.com/share/1ChT4VPRJv/",
+            ],
+            knowsAbout: ["Education", "Literacy", "Teaching", "Mentorship", "Curriculum Development"],
+            award: "Enugu State Maltina Teacher of the Year (2023)",
+            description: DEFAULT_DESC,
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": `${SITE_URL}/#website`,
+            url: SITE_URL,
+            name: SITE_NAME,
+            description: DEFAULT_DESC,
+            publisher: { "@id": `${SITE_URL}/#person` },
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
+              },
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/#breadcrumb`,
+            itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: SITE_URL }],
+          },
+        ]}
+      />
     <Layout>
       {/* Hero Section — cobalt blue + gold from photo */}
       <section ref={heroRef} className="relative py-20 lg:py-32 overflow-hidden home-hero-bg">
@@ -40,14 +94,14 @@ export default function Home() {
             className="space-y-6"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase bg-[#1e4fc8]/10 text-[#1e4fc8] border border-[#1e4fc8]/20">
-              The Education Enthusiast
+              {getContent("hero_badge", "The Education Enthusiast")}
             </div>
             <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
-              Raising Readers. Building Thinkers.{" "}
-              <span className="text-gradient">Transforming Education.</span>
+              {getContent("hero_headline_1", "Raising Readers. Building Thinkers.")}{" "}
+              <span className="text-gradient">{getContent("hero_headline_2", "Transforming Education.")}</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-              I help students, educators, and schools build strong literacy, clear expression, and systems that produce real learning outcomes.
+              {getContent("hero_subtitle", "I help students, educators, and schools build strong literacy, clear expression, and systems that produce real learning outcomes.")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
@@ -56,16 +110,16 @@ export default function Home() {
                   className="w-full sm:w-auto text-md px-8 rounded-full h-14"
                   style={{ background: "linear-gradient(135deg, #1a4fc8, #1e3a8a)" }}
                 >
-                  Book a Session
+                  {getContent("hero_cta_book", "Book a Session")}
                 </Button>
               </a>
-              <a href="#">
+              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
                 <Button
                   size="lg"
                   variant="outline"
                   className="w-full sm:w-auto text-md px-8 rounded-full h-14 border-[#d4a017]/50 text-[#1a4fc8] hover:bg-[#d4a017]/8"
                 >
-                  Join Learning Community
+                  {getContent("hero_cta_community", "Join Learning Community")}
                 </Button>
               </a>
             </div>
@@ -73,9 +127,9 @@ export default function Home() {
             {/* Mini stat strip */}
             <div className="flex flex-wrap gap-6 pt-2">
               {[
-                { label: "Students Mentored", value: "500+" },
-                { label: "Schools Supported", value: "30+" },
-                { label: "Years Experience", value: "6+" },
+                { label: getContent("stat_students_label", "Students Mentored"), value: getContent("stat_students", "500+") },
+                { label: getContent("stat_schools_label", "Schools Supported"), value: getContent("stat_schools", "30+") },
+                { label: getContent("stat_years_label", "Years Experience"), value: getContent("stat_years", "6+") },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="text-2xl font-bold text-gradient">{s.value}</div>
@@ -102,7 +156,7 @@ export default function Home() {
               }}
             />
             {/* overflow-hidden so parallax image moves without spilling */}
-            <div className="relative rounded-2xl overflow-hidden img-blue-glow aspect-video lg:aspect-[4/5]">
+            <div className="relative rounded-2xl overflow-hidden img-blue-glow aspect-[3/4] sm:aspect-[4/5]">
               <motion.img
                 src={heroImg}
                 alt="Melvina Igboanugo mentoring"
@@ -142,16 +196,16 @@ export default function Home() {
       <section className="py-24 home-whatido-bg">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block text-xs font-bold tracking-widest uppercase text-accent mb-3">What I Do</span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Empowering Every Corner of Education</h2>
-            <p className="text-muted-foreground text-lg">Empowering the entire educational ecosystem through targeted interventions and strategic support.</p>
+            <span className="inline-block text-xs font-bold tracking-widest uppercase text-accent mb-3">{getContent("section_whatido_badge", "What I Do")}</span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{getContent("section_whatido_title", "Empowering Every Corner of Education")}</h2>
+            <p className="text-muted-foreground text-lg">{getContent("section_whatido_desc", "Empowering the entire educational ecosystem through targeted interventions and strategic support.")}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: "Student Development", desc: "Helping learners become confident readers, writers, and thinkers.", img: studentImg, accent: "#1a4fc8" },
-              { title: "Educator Growth", desc: "Supporting teachers to build strong niches and impactful careers.", img: teacherImg, accent: "#d4a017" },
-              { title: "School Support", desc: "Partnering with schools to improve curriculum delivery and outcomes.", img: schoolImg, accent: "#1a4fc8" },
+              { title: getContent("card_student_title", "Student Development"), desc: getContent("card_student_desc", "Helping learners become confident readers, writers, and thinkers."), img: studentImg, accent: "#1a4fc8" },
+              { title: getContent("card_educator_title", "Educator Growth"), desc: getContent("card_educator_desc", "Supporting teachers to build strong niches and impactful careers."), img: teacherImg, accent: "#d4a017" },
+              { title: getContent("card_school_title", "School Support"), desc: getContent("card_school_desc", "Partnering with schools to improve curriculum delivery and outcomes."), img: schoolImg, accent: "#1a4fc8" },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -249,5 +303,6 @@ export default function Home() {
         </div>
       </section>
     </Layout>
+    </>
   );
 }

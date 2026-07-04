@@ -2,13 +2,13 @@ import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from "@/lib/seo";
 import impactStudentImg from "@/assets/images/impact-student.png";
 import impactEducatorImg from "@/assets/images/impact-educator.png";
 import impactSchoolImg from "@/assets/images/impact-school.png";
 
 export default function Impact() {
-  usePageTitle("Impact");
   const impacts = [
     {
       title: "Student Impact",
@@ -52,7 +52,35 @@ export default function Impact() {
   ];
 
   return (
-    <Layout>
+    <>
+      <SeoHead
+        title="Impact"
+        description="Transforming education through measurable impact — improved reading confidence, stronger teaching systems, and better learning outcomes for students, educators, and schools."
+        ogDescription="Real results in literacy, teacher effectiveness, and school systems improvement — see the measurable impact of Melvina Igboanugo's work."
+        canonicalPath="/impact"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": `${SITE_URL}/impact#webpage`,
+            url: `${SITE_URL}/impact`,
+            name: "Impact | Melvina Igboanugo — The Education Enthusiast",
+            description: "Transforming education through measurable impact.",
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            breadcrumb: { "@id": `${SITE_URL}/impact#breadcrumb` },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/impact#breadcrumb`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Impact", item: `${SITE_URL}/impact` },
+            ],
+          },
+        ]}
+      />
+      <Layout>
       {/* Page Header — gold + purple gradient */}
       <section className="py-20 lg:py-28 page-header-bg relative overflow-hidden border-b border-border/40">
         <div className="absolute inset-0 pointer-events-none">
@@ -87,60 +115,52 @@ export default function Impact() {
       </section>
 
       {/* Impact sections — alternating gold and blue */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="space-y-0">
-            {impacts.map((item, i) => (
-              <div
-                key={i}
-                className={`py-20 ${i % 2 === 0 ? "section-gold-bg" : "section-purple-bg"}`}
-                style={{ margin: "0 -16px", padding: "5rem 16px" }}
+      {impacts.map((item, i) => (
+        <section key={i} className={`py-20 ${i % 2 === 0 ? "section-gold-bg" : "section-purple-bg"}`}>
+          <div className="container mx-auto px-4 md:px-6">
+            <div className={`grid md:grid-cols-2 gap-12 items-center ${item.reverse ? "md:grid-flow-col-dense" : ""}`}>
+              <motion.div
+                initial={{ opacity: 0, x: item.reverse ? 20 : -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className={item.reverse ? "md:col-start-2" : ""}
               >
-                <div className={`container mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-12 items-center ${item.reverse ? "md:grid-flow-col-dense" : ""}`}>
-                  <motion.div
-                    initial={{ opacity: 0, x: item.reverse ? 20 : -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className={item.reverse ? "md:col-start-2" : ""}
-                  >
-                    <div
-                      className="rounded-2xl overflow-hidden shadow-2xl aspect-video"
-                      style={{ boxShadow: `0 20px 60px ${item.accent}28, 0 0 0 3px ${item.accent}22` }}
-                    >
-                      <motion.img
-                        src={item.img}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.08 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: item.reverse ? -20 : 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className={`space-y-6 ${item.reverse ? "md:col-start-1" : ""}`}
-                  >
-                    <h2 className="text-3xl font-bold font-serif">{item.title}</h2>
-                    <div className="w-12 h-1.5 rounded-full" style={{ background: `linear-gradient(90deg, ${item.accent}, ${item.accent}55)` }} />
-                    <ul className="space-y-4">
-                      {item.outcomes.map((outcome, j) => (
-                        <li key={j} className="flex items-center gap-3 text-lg">
-                          <CheckCircle className="w-6 h-6 shrink-0" style={{ color: item.accent }} />
-                          <span>{outcome}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
+                <div
+                  className="rounded-2xl overflow-hidden shadow-2xl aspect-video"
+                  style={{ boxShadow: `0 20px 60px ${item.accent}28, 0 0 0 3px ${item.accent}22` }}
+                >
+                  <motion.img
+                    src={item.img}
+                    alt={item.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    whileHover={{ scale: 1.08 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: item.reverse ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className={`space-y-6 ${item.reverse ? "md:col-start-1" : ""}`}
+              >
+                <h2 className="text-3xl font-bold font-serif">{item.title}</h2>
+                <div className="w-12 h-1.5 rounded-full" style={{ background: `linear-gradient(90deg, ${item.accent}, ${item.accent}55)` }} />
+                <ul className="space-y-4">
+                  {item.outcomes.map((outcome, j) => (
+                    <li key={j} className="flex items-center gap-3 text-lg">
+                      <CheckCircle className="w-6 h-6 shrink-0" style={{ color: item.accent }} />
+                      <span>{outcome}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </div>
+            </div>
+          </section>
+        ))}
 
       {/* Testimonials — rich purple-gold gradient */}
       <section className="py-24 section-primary-gradient text-white relative overflow-hidden">
@@ -189,5 +209,6 @@ export default function Impact() {
         </div>
       </section>
     </Layout>
+    </>
   );
 }

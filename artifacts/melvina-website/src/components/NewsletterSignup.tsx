@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { useSubscribeNewsletter } from "@workspace/api-client-react";
 import { Mail, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const schema = z.object({
   name: z.string().min(1, "Please enter your name"),

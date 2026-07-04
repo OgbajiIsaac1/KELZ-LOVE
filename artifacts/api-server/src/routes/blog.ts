@@ -9,14 +9,14 @@ import {
   UpdateBlogPostBody,
   DeleteBlogPostParams,
 } from "@workspace/api-zod";
-import { requireAdmin } from "../middlewares/adminAuth";
+import { requireAdmin, ADMIN_COOKIE, validateSession } from "../middlewares/adminAuth";
 
 const router: IRouter = Router();
 
 router.get("/blog-posts", async (req, res): Promise<void> => {
   const query = ListBlogPostsQueryParams.safeParse(req.query);
   const showAll = query.success && query.data.all === "true";
-  const isAdmin = req.cookies?.melvina_admin_session === "authenticated";
+  const isAdmin = validateSession(req.cookies?.[ADMIN_COOKIE]);
 
   let posts;
   if (showAll && isAdmin) {

@@ -1,10 +1,14 @@
 import { Router, type IRouter } from "express";
 import { AdminLoginBody } from "@workspace/api-zod";
-import { ADMIN_COOKIE, ADMIN_TOKEN } from "../middlewares/adminAuth";
+import {
+  ADMIN_COOKIE,
+  authenticate,
+  issueSessionToken,
+  validateSession,
+  getAdminCookieOptions,
+} from "../middlewares/adminAuth";
 
 const router: IRouter = Router();
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "melvina2026";
 
 router.post("/admin/login", async (req, res): Promise<void> => {
   const parsed = AdminLoginBody.safeParse(req.body);
@@ -13,28 +17,25 @@ router.post("/admin/login", async (req, res): Promise<void> => {
     return;
   }
 
-  if (parsed.data.password !== ADMIN_PASSWORD) {
+  if (!authenticate(parsed.data.password)) {
     res.status(401).json({ error: "Invalid password" });
     return;
   }
 
-  res.cookie(ADMIN_COOKIE, ADMIN_TOKEN, {
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+  const token = issueSessionToken();
+  res.cookie(ADMIN_COOKIE, token, getAdminCookieOptions());
 
   res.json({ authenticated: true });
 });
 
 router.post("/admin/logout", async (req, res): Promise<void> => {
-  res.clearCookie(ADMIN_COOKIE);
+  res.clearCookie(ADMIN_COOKIE, { path: "/" });
   res.json({ authenticated: false });
 });
 
 router.get("/admin/me", async (req, res): Promise<void> => {
   const cookie = req.cookies?.[ADMIN_COOKIE];
-  const authenticated = cookie === ADMIN_TOKEN;
+  const authenticated = validateSession(cookie);
   res.json({ authenticated });
 });
 

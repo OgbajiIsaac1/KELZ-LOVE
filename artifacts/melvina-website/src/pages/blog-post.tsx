@@ -7,7 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { useGetBlogPost, useListBlogPosts, getGetBlogPostQueryKey } from "@workspace/api-client-react";
 import { WHATSAPP_LINK } from "@/lib/constants";
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from "@/lib/seo";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 export default function BlogPost({ id: idStr }: { id?: string }) {
@@ -22,43 +23,98 @@ export default function BlogPost({ id: idStr }: { id?: string }) {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 md:px-6 py-20 max-w-3xl">
-          <Skeleton className="h-8 w-32 mb-8" />
-          <Skeleton className="h-12 w-full mb-4" />
-          <Skeleton className="h-12 w-3/4 mb-8" />
-          <Skeleton className="h-4 w-full mb-3" />
-          <Skeleton className="h-4 w-full mb-3" />
-          <Skeleton className="h-4 w-2/3 mb-3" />
-        </div>
-      </Layout>
+      <>
+        <SeoHead title="Loading..." noindex />
+        <Layout>
+          <div className="container mx-auto px-4 md:px-6 py-20 max-w-3xl">
+            <Skeleton className="h-8 w-32 mb-8" />
+            <Skeleton className="h-12 w-full mb-4" />
+            <Skeleton className="h-12 w-3/4 mb-8" />
+            <Skeleton className="h-4 w-full mb-3" />
+            <Skeleton className="h-4 w-full mb-3" />
+            <Skeleton className="h-4 w-2/3 mb-3" />
+          </div>
+        </Layout>
+      </>
     );
   }
 
   if (isError || !post) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 md:px-6 py-32 text-center">
-          <h1 className="font-serif text-3xl font-bold mb-4">Article not found</h1>
-          <p className="text-muted-foreground mb-8">This article may have been removed or does not exist.</p>
-          <Link href="/blog">
-            <Button variant="outline" className="rounded-full gap-2">
-              <ArrowLeft size={16} /> Back to Blog
-            </Button>
-          </Link>
-        </div>
-      </Layout>
+      <>
+        <SeoHead title="Article not found" noindex />
+        <Layout>
+          <div className="container mx-auto px-4 md:px-6 py-32 text-center">
+            <h1 className="font-serif text-3xl font-bold mb-4">Article not found</h1>
+            <p className="text-muted-foreground mb-8">This article may have been removed or does not exist.</p>
+            <Link href="/blog">
+              <Button variant="outline" className="rounded-full gap-2">
+                <ArrowLeft size={16} /> Back to Blog
+              </Button>
+            </Link>
+          </div>
+        </Layout>
+      </>
     );
   }
 
-  usePageTitle(post?.title);
-
-  const publishDate = post.publishedAt
-    ? new Date(post.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : new Date(post.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const displayDate = post.publishedAt ?? post.createdAt;
+  const publishDate = new Date(displayDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const isoDate = new Date(displayDate).toISOString();
 
   return (
-    <Layout>
+    <>
+      <SeoHead
+        title={post.title}
+        description={post.excerpt}
+        ogDescription={post.excerpt}
+        ogImage={post.imageUrl ?? undefined}
+        canonicalPath={`/blog/${post.id}`}
+        ogType="article"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "@id": `${SITE_URL}/blog/${post.id}#article`,
+            headline: post.title,
+            description: post.excerpt,
+            image: post.imageUrl ? `${SITE_URL}${post.imageUrl.startsWith("/") ? "" : "/"}${post.imageUrl}` : `${SITE_URL}/opengraph.jpg`,
+            datePublished: isoDate,
+            dateModified: isoDate,
+            author: {
+              "@type": "Person",
+              "@id": `${SITE_URL}/#person`,
+              name: "Melvina Igboanugo",
+              url: SITE_URL,
+            },
+            publisher: {
+              "@type": "Person",
+              "@id": `${SITE_URL}/#person`,
+              name: "Melvina Igboanugo",
+              url: SITE_URL,
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `${SITE_URL}/blog/${post.id}`,
+            },
+            speakable: {
+              "@type": "SpeakableSpecification",
+              cssSelector: ["h1", "h2", "h3"],
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/blog/${post.id}#breadcrumb`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+              { "@type": "ListItem", position: 3, name: post.title, item: `${SITE_URL}/blog/${post.id}` },
+            ],
+          },
+        ]}
+      />
+      <Layout>
       {/* Hero */}
       <section className="py-12 lg:py-16 border-b border-border/50 bg-primary-subtle">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">
@@ -119,31 +175,8 @@ export default function BlogPost({ id: idStr }: { id?: string }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.5 }}
           className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-primary prose-strong:text-foreground"
-        >
-          {post.content.split("\n\n").map((para, i) => {
-            if (para.startsWith("## ")) {
-              return <h2 key={i} className="text-2xl font-bold mt-8 mb-4">{para.replace("## ", "")}</h2>;
-            }
-            if (para.startsWith("### ")) {
-              return <h3 key={i} className="text-xl font-bold mt-6 mb-3">{para.replace("### ", "")}</h3>;
-            }
-            if (para.startsWith("- ")) {
-              const items = para.split("\n").filter((l) => l.startsWith("- "));
-              return (
-                <ul key={i} className="my-4 space-y-2 list-disc list-inside">
-                  {items.map((item, j) => (
-                    <li key={j} className="text-muted-foreground">{item.replace("- ", "")}</li>
-                  ))}
-                </ul>
-              );
-            }
-            return (
-              <p key={i} className="text-muted-foreground leading-relaxed mb-5">
-                {para}
-              </p>
-            );
-          })}
-        </motion.div>
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
 
         {/* Author + CTA */}
         <div className="mt-14 pt-10 border-t border-border/50 flex flex-col sm:flex-row gap-6 items-start">
@@ -194,5 +227,6 @@ export default function BlogPost({ id: idStr }: { id?: string }) {
         <NewsletterSignup />
       </div>
     </Layout>
+    </>
   );
 }

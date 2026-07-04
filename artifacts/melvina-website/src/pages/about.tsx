@@ -1,12 +1,14 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useSiteContent } from "@/lib/useSiteContent";
 import { Target, Heart, Zap, BookOpen, Star } from "lucide-react";
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from "@/lib/seo";
 import profileImg from "@/assets/images/profile.png";
 
 export default function About() {
-  usePageTitle("About");
+  const { getContent } = useSiteContent();
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -23,7 +25,36 @@ export default function About() {
   ];
 
   return (
-    <Layout>
+    <>
+      <SeoHead
+        title="About"
+        description="Accomplished educator, communication coach, learning strategist, and school leader with over nine years of experience. Enugu State Maltina Teacher of the Year (2023), Top 10 nationwide, Director of Studies at Roseville Secondary School."
+        ogDescription="9+ years transforming classrooms. Enugu State Maltina Teacher of the Year (2023). Literacy specialist, school leader, and founder of The Education Enthusiast."
+        canonicalPath="/about"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "@id": `${SITE_URL}/about#webpage`,
+            url: `${SITE_URL}/about`,
+            name: "About | Melvina Igboanugo — The Education Enthusiast",
+            description: "Education leader, mentor, and learning strategist with over six years of experience.",
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            breadcrumb: { "@id": `${SITE_URL}/about#breadcrumb` },
+            mainEntity: { "@id": `${SITE_URL}/#person` },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/about#breadcrumb`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "About", item: `${SITE_URL}/about` },
+            ],
+          },
+        ]}
+      />
+      <Layout>
       {/* Hero — fuchsia pink + navy blue from profile photo */}
       <section ref={heroRef} className="py-20 lg:py-32 about-hero-bg relative overflow-hidden">
         {/* Decorative orbs */}
@@ -79,11 +110,11 @@ export default function About() {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase"
                 style={{ background: "rgba(233, 30, 140, 0.10)", color: "#c01070", border: "1px solid rgba(233, 30, 140, 0.22)" }}
               >
-                Meet Melvina
+                {getContent("about_hero_badge", "Meet Melvina")}
               </div>
 
               <h1 className="text-4xl md:text-5xl font-bold font-serif leading-tight">
-                More Than Teaching.{" "}
+                {getContent("about_hero_headline_1", "More Than Teaching.")}{" "}
                 <br />
                 <span
                   style={{
@@ -93,34 +124,24 @@ export default function About() {
                     backgroundClip: "text",
                   }}
                 >
-                  Building Systems That Shape Lives.
+                  {getContent("about_hero_headline_2", "Building Systems That Shape Lives.")}
                 </span>
               </h1>
 
               {/* Pink accent bar */}
               <div className="w-16 h-1.5 rounded-full" style={{ background: "linear-gradient(90deg, #e91e8c, #1a237e)" }} />
 
-              <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
-                <p>
-                  As an education leader, mentor, and learning strategist, my work is rooted in a simple belief: every student can excel when given the right structure, and every educator can thrive when given the right support.
-                </p>
-                <p>
-                  My journey in education has been defined by a commitment to literacy, clear expression, and academic excellence. Being recognized as the Enugu State Maltina Teacher of the Year (2023) and serving as Director of Studies at Roseville Secondary School has deepened my resolve to build systems that produce real learning outcomes.
-                </p>
-                <p>
-                  I don't just teach. I partner with students to build strong reading habits and structured thinking. I mentor educators to find their niche and advance their careers. And I consult with schools to elevate their curriculum delivery.
-                </p>
-              </div>
+              <div className="space-y-4 text-lg text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: getContent("about_bio", "An accomplished educator, communication coach, learning strategist, and school leader dedicated to transforming education through literacy, effective communication, and student-centered learning. With over nine years of experience in teaching, curriculum development, educational leadership, and youth development, I have built a reputation for helping students achieve academic excellence while equipping educators with practical strategies for professional growth.") }} />
 
               {/* Quick badges */}
               <div className="flex flex-wrap gap-3 pt-2">
-                {["Maltina Teacher of the Year 2023", "UNESCO Global School Advocate", "Director of Studies"].map((badge) => (
+                {(getContent("about_badges", "Maltina Teacher of the Year 2023, Nigeria Top 10 Teacher, Director of Studies, TRCN Certified, Harvard Business School Online, Global School Advocate")).split(",").map((badge) => (
                   <span
-                    key={badge}
+                    key={badge.trim()}
                     className="text-xs font-semibold px-3 py-1.5 rounded-full"
                     style={{ background: "rgba(26, 35, 126, 0.08)", color: "#1a237e", border: "1px solid rgba(26, 35, 126, 0.18)" }}
                   >
-                    {badge}
+                    {badge.trim()}
                   </span>
                 ))}
               </div>
@@ -146,13 +167,18 @@ export default function About() {
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-2"
               style={{ background: "rgba(233, 30, 140, 0.20)", color: "#f48cb8" }}
             >
-              Vision
+              {getContent("about_vision_badge", "Vision")}
             </div>
-            <h2 className="text-3xl font-serif font-bold">Our Vision</h2>
+            <h2 className="text-3xl font-serif font-bold">{getContent("about_vision_title", "Our Vision")}</h2>
             <div className="w-10 h-1 rounded-full" style={{ background: "linear-gradient(90deg, #e91e8c, rgba(233,30,140,0.3))" }} />
             <p className="text-lg text-white/80 leading-relaxed">
-              To cultivate a generation of confident readers, articulate thinkers, and empowered educators who transform their communities and shape the future of global education.
+              {getContent("about_vision_text", "To cultivate a generation of confident readers, articulate thinkers, and empowered educators who transform their communities and shape the future of global education.")}
             </p>
+            <div
+              className="pt-6 italic text-white/70 border-t border-white/10 text-base"
+            >
+              {getContent("about_vision_quote", '"Every student can excel when given the right structure, and every educator can thrive when given the right support."')}
+            </div>
           </motion.div>
 
           <motion.div
@@ -166,12 +192,12 @@ export default function About() {
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-2"
               style={{ background: "rgba(255, 255, 255, 0.10)", color: "rgba(255,255,255,0.75)" }}
             >
-              Mission
+              {getContent("about_mission_badge", "Mission")}
             </div>
-            <h2 className="text-3xl font-serif font-bold">Our Mission</h2>
+            <h2 className="text-3xl font-serif font-bold">{getContent("about_mission_title", "Our Mission")}</h2>
             <div className="w-10 h-1 rounded-full" style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0.15))" }} />
             <p className="text-lg text-white/80 leading-relaxed">
-              To provide targeted interventions, strategic mentorship, and systemic support that equip learners, teachers, and institutions with the tools they need to achieve academic and professional excellence.
+              {getContent("about_mission_text", "To provide targeted interventions, strategic mentorship, and systemic support that equip learners, teachers, and institutions with the tools they need to achieve academic and professional excellence.")}
             </p>
           </motion.div>
         </div>
@@ -182,10 +208,10 @@ export default function About() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="inline-block text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#c01070" }}>
-              Our Core Values
+              {getContent("about_values_badge", "Our Core Values")}
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Principles That Guide Us</h2>
-            <p className="text-muted-foreground text-lg">The principles that guide every session, every workshop, and every partnership.</p>
+            <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">{getContent("about_values_title", "Principles That Guide Us")}</h2>
+            <p className="text-muted-foreground text-lg">{getContent("about_values_desc", "The principles that guide every session, every workshop, and every partnership.")}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
@@ -216,5 +242,6 @@ export default function About() {
         </div>
       </section>
     </Layout>
+    </>
   );
 }

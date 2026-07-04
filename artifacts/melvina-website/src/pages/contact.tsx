@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { WHATSAPP_LINK } from "@/lib/constants";
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
+import { SITE_URL } from "@/lib/seo";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, CheckCircle2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -28,7 +29,6 @@ const contactItems = [
 ];
 
 export default function Contact() {
-  usePageTitle("Contact");
   const [submitted, setSubmitted] = useState(false);
   const submitContact = useSubmitContact();
 
@@ -50,7 +50,36 @@ export default function Contact() {
   }
 
   return (
-    <Layout>
+    <>
+      <SeoHead
+        title="Contact"
+        description="Get in touch with Melvina Igboanugo for student mentorship, educator guidance, or school consulting. Based in Enugu, Nigeria — available worldwide."
+        ogDescription="Reach out for student mentorship, educator training, or school consulting with Melvina Igboanugo."
+        canonicalPath="/contact"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            "@id": `${SITE_URL}/contact#webpage`,
+            url: `${SITE_URL}/contact`,
+            name: "Contact | Melvina Igboanugo — The Education Enthusiast",
+            description: "Get in touch with Melvina Igboanugo for student mentorship, educator guidance, or school consulting.",
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            breadcrumb: { "@id": `${SITE_URL}/contact#breadcrumb` },
+            mainEntity: { "@id": `${SITE_URL}/#person` },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${SITE_URL}/contact#breadcrumb`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Contact", item: `${SITE_URL}/contact` },
+            ],
+          },
+        ]}
+      />
+      <Layout>
       {/* Page Header */}
       <section className="py-14 page-header-bg border-b border-border/40 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -250,5 +279,6 @@ export default function Contact() {
         </div>
       </section>
     </Layout>
+    </>
   );
 }

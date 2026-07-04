@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm run build && pnpm run start",
-    "dev:win": "pnpm run build && pnpm run start",
+    "dev": "node --env-file=../../.env --enable-source-maps ./build.mjs && node --env-file=../../.env --watch --enable-source-maps ./dist/index.mjs",
+    "dev:win": "node --env-file=../../.env --enable-source-maps ./build.mjs && node --env-file=../../.env --watch --enable-source-maps ./dist/index.mjs",
     "build": "node ./build.mjs",
     "start": "node --env-file=../../.env --enable-source-maps ./dist/index.mjs",
+    "seed": "node --env-file=../../.env --enable-source-maps ./dist/seed-cli.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
@@ -17,6 +18,8 @@
     "cors": "^2",
     "drizzle-orm": "catalog:",
     "express": "^5",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
     "pino": "^9",
     "pino-http": "^10"
   },

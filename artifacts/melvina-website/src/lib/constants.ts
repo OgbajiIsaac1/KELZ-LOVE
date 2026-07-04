@@ -1,4 +1,4 @@
-export const WHATSAPP_LINK = "https://wa.me/2347067825349?text=Hello%20I%20want%20to%20enquire%20about%20your%20programs";
+export const WHATSAPP_LINK = "https://wa.me/2347067825349?text=Hello%2C%20I%20was%20redirected%20from%20your%20website%20%E2%80%94%20can%20we%20discuss%20your%20programs%3F";
 
 export const SOCIAL_LINKS = {
   youtube: "https://www.youtube.com/@melvinaigboanugo2526",

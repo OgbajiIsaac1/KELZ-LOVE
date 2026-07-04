@@ -5,6 +5,7 @@ import newsletterRouter from "./newsletter";
 import siteContentRouter from "./siteContent";
 import adminRouter from "./admin";
 import contactRouter from "./contact";
+import sitemapRouter from "./sitemap";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(newsletterRouter);
 router.use(siteContentRouter);
 router.use(adminRouter);
 router.use(contactRouter);
+router.use(sitemapRouter);
 
 export default router;

@@ -3,10 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation } from "wouter";
-import { usePageTitle } from "@/lib/seo";
+import { SeoHead } from "@/components/SeoHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/RichTextEditor";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -35,7 +36,7 @@ import {
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  BookOpen, Users, Settings, LogOut, Plus, Edit2, Trash2, Save, X,
+  BookOpen, Settings, LogOut, Plus, Edit2, Trash2, Save, X,
   Mail, Eye, EyeOff, ChevronLeft, BarChart2, MessageSquare, CheckCheck, Circle,
 } from "lucide-react";
 
@@ -57,13 +58,15 @@ const blogSchema = z.object({
 type BlogValues = z.infer<typeof blogSchema>;
 
 export default function Admin() {
-  usePageTitle("Admin");
   const [, setLocation] = useLocation();
   const [tab, setTab] = useState<Tab>("dashboard");
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [editingContentKey, setEditingContentKey] = useState<string | null>(null);
   const [editingContentValue, setEditingContentValue] = useState("");
+  const [showNewContent, setShowNewContent] = useState(false);
+  const [newContentKey, setNewContentKey] = useState("");
+  const [newContentValue, setNewContentValue] = useState("");
   const [expandedMessage, setExpandedMessage] = useState<number | null>(null);
   const [loginError, setLoginError] = useState("");
 
@@ -195,6 +198,21 @@ export default function Admin() {
     );
   };
 
+  const handleCreateContent = () => {
+    if (!newContentKey.trim()) return;
+    updateContent.mutate(
+      { key: newContentKey.trim(), data: { value: newContentValue } },
+      {
+        onSuccess: () => {
+          qc.invalidateQueries({ queryKey: getListSiteContentQueryKey() });
+          setShowNewContent(false);
+          setNewContentKey("");
+          setNewContentValue("");
+        },
+      }
+    );
+  };
+
   const handleMarkRead = (id: number) => {
     markRead.mutate(
       { id },
@@ -214,18 +232,23 @@ export default function Admin() {
 
   if (sessionLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="space-y-3">
-          <Skeleton className="h-8 w-48 mx-auto" />
-          <Skeleton className="h-4 w-32 mx-auto" />
+      <>
+        <SeoHead title="Admin" noindex />
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="space-y-3">
+            <Skeleton className="h-8 w-48 mx-auto" />
+            <Skeleton className="h-4 w-32 mx-auto" />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!session?.authenticated) {
     return (
-      <div className="min-h-screen bg-primary-subtle flex items-center justify-center px-4">
+      <>
+        <SeoHead title="Admin — Login" noindex />
+        <div className="min-h-screen bg-primary-subtle flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl font-bold text-foreground mb-1">Admin Access</h1>
@@ -264,9 +287,9 @@ export default function Admin() {
                 </Button>
               </form>
             </Form>
-            <p className="text-xs text-muted-foreground text-center mt-4">
-              Default password: <code className="bg-muted px-1 rounded">melvina2026</code>
-            </p>
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                Contact the site administrator if you don't have access.
+              </p>
           </div>
           <div className="text-center mt-6">
             <button onClick={() => setLocation("/")} className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1">
@@ -275,13 +298,16 @@ export default function Admin() {
           </div>
         </div>
       </div>
+    </>
     );
   }
 
   const showingForm = isCreatingPost || editingPost !== null;
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <>
+      <SeoHead title="Admin" noindex />
+      <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <aside className="w-60 bg-card border-r border-border flex-col shrink-0 hidden md:flex">
         <div className="p-6 border-b border-border">
@@ -480,8 +506,13 @@ export default function Admin() {
                       <FormField control={blogForm.control} name="content" render={({ field }) => (
                         <FormItem>
                           <FormLabel>Full Content</FormLabel>
-                          <p className="text-xs text-muted-foreground -mt-1">Use ## for headings, ### for subheadings, - for bullet points. Separate paragraphs with a blank line.</p>
-                          <FormControl><Textarea placeholder="Write the full article here..." rows={16} className="resize-none font-mono text-sm leading-relaxed" {...field} data-testid="textarea-post-content" /></FormControl>
+                          <FormControl>
+                            <RichTextEditor
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Write the full article here…"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />
@@ -555,12 +586,44 @@ export default function Admin() {
           {/* === SITE CONTENT === */}
           {tab === "content" && (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground mb-6">Edit the text that appears across your website.</p>
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-sm text-muted-foreground">Edit the text that appears across your website.</p>
+                <Button size="sm" variant="outline" className="rounded-full gap-1.5" onClick={() => { setShowNewContent(!showNewContent); setNewContentKey(""); setNewContentValue(""); }}>
+                  <Plus size={14} /> New Content
+                </Button>
+              </div>
+
+              {showNewContent && (
+                <div className="bg-card border border-border/60 rounded-xl p-5 space-y-3">
+                  <Input
+                    placeholder="Content key (e.g. hero_title)"
+                    value={newContentKey}
+                    onChange={(e) => setNewContentKey(e.target.value)}
+                    className="h-10 text-sm font-mono"
+                  />
+                  <Textarea
+                    placeholder="Content value"
+                    value={newContentValue}
+                    onChange={(e) => setNewContentValue(e.target.value)}
+                    rows={4}
+                    className="resize-none text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" className="gap-1.5 h-8" onClick={handleCreateContent} disabled={updateContent.isPending || !newContentKey.trim()}>
+                      <Save size={12} /> {updateContent.isPending ? "Saving..." : "Create"}
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => setShowNewContent(false)}>
+                      <X size={12} />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {contentLoading ? (
                 Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)
               ) : siteContent?.length === 0 ? (
                 <div className="bg-muted/50 rounded-xl p-8 text-center text-muted-foreground text-sm">
-                  No content items found.
+                  No content items found. Click "New Content" to add one.
                 </div>
               ) : (
                 siteContent?.map((item) => (
@@ -725,5 +788,6 @@ export default function Admin() {
         </div>
       </main>
     </div>
+    </>
   );
 }
